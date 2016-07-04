@@ -1,5 +1,6 @@
 -module(markov).
 
+%% API
 -export([tokenize/1, ngrams/2, bigrams/1, trigrams/1, analyze/2]).
 
 -define(SEPARATORS, " \t\r\n.,:;?!()[]").

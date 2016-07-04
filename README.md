@@ -1,14 +1,14 @@
 # nanibot
 Erlang IRC bot.
 
-## Getting started
-### The Erlang Shell
+## getting started
+### the erlang shell
 Make sure you have some kind of Erlang running. There's a specialized shell 
 for Win Windows. Look for instructions in the documentation.
 
 Once you have an Erlang shell up and running we can continue.
 
-### Compiling
+### compiling
 There's no Rebar or something yet so we have toi do this the clunky way. Once
 in your Erlang shell:
 ```
@@ -20,7 +20,7 @@ After that we compile all modulels:
 > lc([markov, markov_server, nani_conn, nani_botr]).
 ```
 
-### Starting
+### starting
 We need some `Config` such as:
 ```
 > Config = [{host, "irc.freenode.net"}, {port, 6667}, {nick, "YourBotNick"}].
@@ -43,7 +43,7 @@ some channel:
 > nani_bot:join("##somechannel").
 ```
 
-### Doing stuff
+### doing stuff
 Once you're connected to a channel you might wanna say some stuff:
 ```
 > nani_bot:say("##somechannel", "You guys are fab!").
@@ -65,7 +65,7 @@ This will change your name to `Foobot`.
 > nani_bot:send("NICK Foobot").
 ```
 
-## Markov Server
+## markov server
 There's a tiny Markov text chain server. You can get markov by asking:
 ```
 > markov_server:generate(20).

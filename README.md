@@ -86,7 +86,7 @@ Or you seed it with just a string, that will work too:
 
 That should at least give it something to work with. 
 
-# Notes
+# notes
 * If you don't have any source, I recomment The Tales Of Grimm. Just seed 
 a few of those,  there's some in the repo as well.
 * You probably have to `seed` the server first before it can actually

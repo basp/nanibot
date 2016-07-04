@@ -7,7 +7,7 @@
          terminate/2, code_change/3]).
 
 %% API
--export([start/0, start_link/0, stop/0, lookup/1, seed/1, seed_file/1, generate/1]).
+-export([start/0, start_link/0, stop/0, lookup/1, seed/1, seed_file/1, generate/1, spew_random/0]).
 
 -define(OBJECTS_TABLE, ngrams_objects).
 -define(INDEX_TABLE, ngrams_index).
@@ -36,7 +36,16 @@ seed(Text) ->
 seed_file(Path) ->
     gen_server:cast(?SERVER, {seed_file, Path}).
 
+%% Assumes we are seeded
 generate(Count) ->
+    gen_server:call(?SERVER, {generate, Count}).
+
+% Why not?
+spew_random() ->
+    spew_random(20);
+
+spew_random(Count) ->
+    Count = rand:uniform(Count),
     gen_server:call(?SERVER, {generate, Count}).
 
 %%%============================================================================

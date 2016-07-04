@@ -43,5 +43,44 @@ some channel:
 > nani_bot:join("##somechannel").
 ```
 
-There's some more API commands but I'm too lazy to document them now. Check 
-the source.
+### Saying stuff
+Once you're connected to a channel you might wanna say some stuff:
+```
+> nani_bot:say("##somechannel", "You guys are fab!").
+```
+
+You might also wanna emote something with the bot:
+```
+> nani_bot:emote("##somechannell", "dances across the room")).
+```
+
+The above will turn out into an **action** on the IRC chat:
+```
+Bot dances acress the room
+```
+
+You can also send raw commands with the  `send` function:
+```
+> nani_bot:send("NICKK Foobot").
+```
+
+This will change your name to `Foobot`.
+
+## Markov Server
+There's a tiny Markov text chain server. You can get markov by asking:
+```
+> markov_server:generate(20).
+```
+
+And this will generate `20` words of Markov-chain-based text. 
+
+NOTE: You probably have to `seed` the server first before it can actually
+serve you something:
+```
+> markov_server:seed_file("./path/to/file")).
+```
+
+That should at least give it something to work with. 
+
+If you don't have any source, I recomment The Tales Of Grimm. Just seed 
+a few of those,  there's some in the repo as well.

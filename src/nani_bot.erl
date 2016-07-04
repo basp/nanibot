@@ -3,7 +3,7 @@
 -behaviour(gen_statem).
 
 %% API
--export([start/1, connect/0, stop/0, send/1, join/1, say/2]).
+-export([start/1, connect/0, stop/0, send/1, join/1, say/2, emote/2]).
 
 %% state functions
 -export([standby/3, connecting/3, registering/3, ready/3]).
@@ -37,6 +37,10 @@ join(Channel) ->
 
 say(To, Text) ->
     Msg = ["PRIVMSG ", To, " :", Text],
+    gen_statem:cast(name(), {send, Msg}).
+
+emote(To, Action) ->
+    Msg = ["PRIVMSG ", To, " :", 1, "ACTION ", Action, 1],
     gen_statem:cast(name(), {send, Msg}).
 
 send(Msg) -> 

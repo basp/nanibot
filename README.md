@@ -72,12 +72,14 @@ There's a tiny Markov text chain server. You can get markov by asking:
 ```
 
 And this will generate `20` words of Markov-chain-based text. 
+
+However, if the server has *not* been seeded yet it will probably blow
+up with some really opaque error. Make sure you always seed it first:
 ```
 > markov_server:seed_file("./path/to/file")).
 ```
 
-However, if the server has *not* been seeded yet it will probably blow
-up with some really opaque error. Make sure you always seed it first:
+Or you seed it with just a string, that will work too:
 ```
 > markov_server:seed("foo bar quux, random stuff").
 ```

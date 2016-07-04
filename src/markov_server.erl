@@ -53,11 +53,8 @@ handle_call({lookup, Key}, _From, State) ->
     Reply = ets:lookup(Objects, Key),
     {reply, Reply, State};
 
-handle_call({generate, _Count}, _From, State) ->
-    _Index = State#state.index,
-    _Objects = State#state.objects,
-    %Reply = generate(Index, Obects, Count, []),
-    Reply = ok,
+handle_call({generate, Count}, _From, State) ->
+    Reply = generate(Count, State, []),
     {reply, Reply, State}.
 
 handle_cast({seed_file, Path}, State) ->
@@ -82,6 +79,26 @@ code_change(_OldVsn, State, _Extra) ->
 %%%============================================================================
 %%% Internal functions
 %%%============================================================================
+random_key(State) ->
+    Index = State#state.index,
+    KeyCount = State#state.count,
+    % TODO: I'm not totally feeling happy about this
+    RandomKey = rand:uniform(KeyCount) - 1,
+    [Thing] = ets:lookup(Index, RandomKey),
+    Thing.
+    
+random_next(Key, State) ->
+    Objects = State#state.objects,
+    case ets:lookup(Objects, Key) of
+        [] -> [];
+        [{_, Candidates}] -> Candidates
+    end. 
+
+generate(_Count, State, _Acc) ->
+    Thing = random_key(State),
+    {_Index, RandomKey} = Thing,
+    {RandomKey, random_next(RandomKey, State)}.
+
 seed(Text, State) ->
     Index = State#state.index,
     Objects = State#state.objects,

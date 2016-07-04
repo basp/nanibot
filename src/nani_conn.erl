@@ -18,7 +18,8 @@ opts() -> [binary, {active, true}, {packet, line}, {keepalive, true}].
 %%% API
 %%%============================================================================
 start_link(Parent, Host, Port) ->
-    gen_server:start_link({local, ?SERVER}, ?MODULE, [Parent, Host, Port], []).
+    Args = [Parent, Host, Port],
+    gen_server:start_link({local, ?SERVER}, ?MODULE, Args, []).
 
 send(Pid, Data) -> 
     gen_server:cast(Pid, {send, [Data, ?CRLF]}).

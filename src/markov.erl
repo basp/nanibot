@@ -3,7 +3,7 @@
 %% API
 -export([tokenize/1, ngrams/2, bigrams/1, trigrams/1, analyze/2]).
 
--define(SEPARATORS, " \t\r\n.,:;?!()[]").
+-define(SEPARATORS, " \t\r\n~!@#$%^&*-_+=[]{}\\|;:\",.<>?/").
 
 %%%============================================================================
 %%% API
@@ -79,8 +79,8 @@ ngrams(5, [A, B, C, D, E | Rest], Acc) ->
 analyze(2, [A, {_, U}], Acc) ->
     analyze(2, [], [{A, U} | Acc]);
 
-analyze(2, [A, {_, U} | Rest], Acc) ->
-    analyze(2, Rest, [{A, U} | Acc]);
+analyze(2, [A, {_, U} = B | Rest], Acc) ->
+    analyze(2, [B | Rest], [{A, U} | Acc]);
 
 analyze(2, _, Acc) ->
     lists:reverse(Acc);

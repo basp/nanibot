@@ -1,4 +1,4 @@
--module(sample).
+-module(markov_server).
 
 -behaviour(gen_server).
 
@@ -9,7 +9,7 @@
 %% API
 -export([start_link/0, insert/1, lookup/1, seed/1]).
 
--define(TABLE, test).
+-define(TABLE, ngrams).
 -define(SERVER, ?MODULE).
 
 %%%============================================================================
@@ -26,6 +26,9 @@ lookup(Key) ->
 
 seed(Text) ->
     gen_server:cast(?SERVER, {seed, Text}).
+
+generate(Text, Count) ->
+    gen_server:call(?SERVER, {generate, Count})
 
 %%%============================================================================
 %%% gen_server callbacks

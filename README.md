@@ -8,7 +8,7 @@ for Win Windows. Look for instructions in the documentation.
 
 Once you have an Erlang shell up and running we can continue.
 
-### Compiling Nani
+### Compiling
 There's no Rebar or something yet so we have toi do this the clunky way. Once
 in your Erlang shell:
 ```
@@ -20,6 +20,7 @@ After that we compile all modulels:
 > lc([markov, markov_server, nani_conn, nani_botr]).
 ```
 
+### Starting
 We need some `Config` such as:
 ```
 > Config = {Host = "irc.freenode.net", Port = 6667, Nick = "YourBotNick"}

@@ -76,13 +76,16 @@ And this will generate `20` words of Markov-chain-based text.
 > markov_server:seed_file("./path/to/file")).
 ```
 
-That should at least give it something to work with. Or you can just seed
-it with a string:
+However, if the server has *not* been seeded yet it will probably blow
+up with some really opaque error. Make sure you always seed it first:
 ```
 > markov_server:seed("foo bar quux, random stuff").
 ```
 
-Note that you can just feed it while it's running. I recommend feeding it 
+That should at least give it something to work with. Or you can just seed
+it with a string:
+
+NOTE: You can just feed it while it's running. I recommend feeding it 
 the output of the channels its participating in. Just seed all the 
 incoming `PRIVMSG` stuff into `markoV_server:seed/1`.
 

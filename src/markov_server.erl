@@ -7,11 +7,12 @@
          terminate/2, code_change/3]).
 
 %% API
--export([start/0, start_link/0, stop/0, lookup/1, seed/1, seed_file/1, generate/1, spew_random/0]).
+-export([start/0, start_link/0, stop/0, lookup/1, seed/1, seed_file/1, generate/1, spew_random/0, spew_random/1]).
 
 -define(OBJECTS_TABLE, ngrams_objects).
 -define(INDEX_TABLE, ngrams_index).
 -define(SERVER, ?MODULE).
+-define(DEFAULT_COUNT, 20).
 
 -record(state, {index, objects, count}).
 
@@ -38,14 +39,6 @@ seed_file(Path) ->
 
 %% Assumes we are seeded
 generate(Count) ->
-    gen_server:call(?SERVER, {generate, Count}).
-
-% Why not?
-spew_random() ->
-    spew_random(20);
-
-spew_random(Count) ->
-    Count = rand:uniform(Count),
     gen_server:call(?SERVER, {generate, Count}).
 
 %%%============================================================================

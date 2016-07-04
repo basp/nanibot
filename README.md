@@ -62,7 +62,7 @@ Bot dances acress the room
 You can also send raw commands with the  `send` function. 
 This will change your name to `Foobot`.
 ```
-> nani_bot:send("NICKK Foobot").
+> nani_bot:send("NICK Foobot").
 ```
 
 ## Markov Server

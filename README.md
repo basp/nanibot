@@ -23,7 +23,7 @@ After that we compile all modulels:
 ### Starting
 We need some `Config` such as:
 ```
-> Config = {Host = "irc.freenode.net", Port = 6667, Nick = "YourBotNick"}
+> Config = [{host, "irc.freenode.net"}, {port, 6667}, {nick, "YourBotNick"}].
 ```
 
 Now we are ready to connect. First start the bot:

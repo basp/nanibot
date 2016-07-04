@@ -54,7 +54,8 @@ handle_call({lookup, Key}, _From, State) ->
     {reply, Reply, State};
 
 handle_call({generate, Count}, _From, State) ->
-    Reply = generate(Count, State, []),
+    NextKey = random_key(State),
+    Reply = generate(Count, NextKey, State, []),
     {reply, Reply, State}.
 
 handle_cast({seed_file, Path}, State) ->
@@ -83,9 +84,10 @@ random_key(State) ->
     Index = State#state.index,
     KeyCount = State#state.count,
     % TODO: I'm not totally feeling happy about this
-    RandomKey = rand:uniform(KeyCount) - 1,
-    [Thing] = ets:lookup(Index, RandomKey),
-    Thing.
+    RandomIndex = rand:uniform(KeyCount) - 1,
+    [{_Index, Key}] = ets:lookup(Index, RandomIndex),
+    %io:format("~p~n", [Key]),
+    Key.
     
 random_next(Key, State) ->
     Objects = State#state.objects,
@@ -94,10 +96,18 @@ random_next(Key, State) ->
         [{_, Candidates}] -> Candidates
     end. 
 
-generate(_Count, State, _Acc) ->
-    Thing = random_key(State),
-    {_Index, RandomKey} = Thing,
-    {RandomKey, random_next(RandomKey, State)}.
+generate(0, _Key, _State, Acc) -> 
+    lists:reverse(Acc);
+
+% NOTE: Only bigrams for now
+generate(Count, {_, B} = Key, State, Acc) ->
+    case random_next(Key, State) of
+        [] -> 
+            lists:reverse(Acc);
+        [Head | _Rest] -> 
+            NextKey = {B, Head},
+            generate(Count - 1, NextKey, State, [Head | Acc])
+    end.
 
 seed(Text, State) ->
     Index = State#state.index,

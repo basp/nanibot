@@ -84,15 +84,15 @@ Or you seed it with just a string, that will work too:
 > markov_server:seed("foo bar quux, random stuff").
 ```
 
-That should at least give it something to work with. Or you can just seed
-it with a string:
-
-NOTE: You can just feed it while it's running. I recommend feeding it 
-the output of the channels its participating in. Just seed all the 
-incoming `PRIVMSG` stuff into `markoV_server:seed/1`.
+That should at least give it something to work with. 
 
 # Notes
 * If you don't have any source, I recomment The Tales Of Grimm. Just seed 
 a few of those,  there's some in the repo as well.
 * You probably have to `seed` the server first before it can actually
 serve you something.
+* You can just feed it while it's running. I recommend feeding it 
+the output of the channels its participating in. Just seed all the 
+incoming `PRIVMSG` stuff into `markoV_server:seed/1`.
+
+

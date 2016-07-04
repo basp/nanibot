@@ -43,7 +43,7 @@ some channel:
 > nani_bot:join("##somechannel").
 ```
 
-### Saying stuff
+### Doing stuff
 Once you're connected to a channel you might wanna say some stuff:
 ```
 > nani_bot:say("##somechannel", "You guys are fab!").

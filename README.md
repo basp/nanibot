@@ -93,6 +93,7 @@ a few of those,  there's some in the repo as well.
 serve you something.
 * You can just feed it while it's running. I recommend feeding it 
 the output of the channels its participating in. Just seed all the 
-incoming `PRIVMSG` stuff into `markoV_server:seed/1`.
+incoming `PRIVMSG` stuff into `markov_server:seed/1` and the bot will get
+either more interesting or more dumb depending on the the stuff it's fed.
 
 

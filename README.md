@@ -1,0 +1,2 @@
+# nanibot
+Erlang IRC bot.

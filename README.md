@@ -59,12 +59,11 @@ The above will turn out into an **action** on the IRC chat:
 Bot dances acress the room
 ```
 
-You can also send raw commands with the  `send` function:
+You can also send raw commands with the  `send` function. 
+This will change your name to `Foobot`.
 ```
 > nani_bot:send("NICKK Foobot").
 ```
-
-This will change your name to `Foobot`.
 
 ## Markov Server
 There's a tiny Markov text chain server. You can get markov by asking:
@@ -73,14 +72,22 @@ There's a tiny Markov text chain server. You can get markov by asking:
 ```
 
 And this will generate `20` words of Markov-chain-based text. 
-
-NOTE: You probably have to `seed` the server first before it can actually
-serve you something:
 ```
 > markov_server:seed_file("./path/to/file")).
 ```
 
-That should at least give it something to work with. 
+That should at least give it something to work with. Or you can just seed
+it with a string:
+```
+> markov_server:seed("foo bar quux, random stuff").
+```
 
-If you don't have any source, I recomment The Tales Of Grimm. Just seed 
+Note that you can just feed it while it's running. I recommend feeding it 
+the output of the channels its participating in. Just seed all the 
+incoming `PRIVMSG` stuff into `markoV_server:seed/1`.
+
+# Notes
+* If you don't have any source, I recomment The Tales Of Grimm. Just seed 
 a few of those,  there's some in the repo as well.
+* You probably have to `seed` the server first before it can actually
+serve you something.

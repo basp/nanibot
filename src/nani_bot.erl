@@ -3,7 +3,7 @@
 -behaviour(gen_statem).
 
 %% API
--export([start/1, connect/0, stop/0, send/1, join/1, say/2, emote/2, use/2, speak/2]).
+-export([start/1, connect/0, stop/0, send/1, join/1, say/2, emote/2, speak/2]).
 
 %% state functions
 -export([standby/3, connecting/3, registering/3, ready/3]).
@@ -33,9 +33,6 @@ real_name() -> ?REAL_NAME.
 %%%============================================================================
 start(Config) -> 
     gen_statem:start({local, name()}, ?MODULE, Config, []).
-
-use(Event, {_M, _F, _A} = Middleware) ->
-    gen_statem:cast(name(), {use, Event, Middleware}).
 
 connect() -> 
     gen_statem:cast(name(), connect).

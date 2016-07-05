@@ -44,56 +44,32 @@ some channel:
 ```
 
 ### doing stuff
-Once you're connected to a channel you might wanna say some stuff:
+As of yet, the bot doesn't do anything by itself. However you can do some
+control runs using the API.
+
+Once you have executed `nani_bot:join(Channel)` and after you received the
+`NAMREPLY` message you can participate in the chat. You can use the API to
+easy `say` and `emote` stuff but you can always use the low-level `send` 
+API as well.
 ```
-> nani_bot:say("##somechannel", "You guys are fab!").
+> nani_bot:say("##somechannel", "Hiya all!").
 ```
 
-You might also wanna emote something with the bot:
+Or emote something:
 ```
-> nani_bot:emote("##somechannell", "dances across the room")).
-```
-
-The above will turn out into an **action** on the IRC chat:
-```
-Bot dances acress the room
+> nani_bot:emote("##somechannel", "hops around nervously").
 ```
 
-You can also send raw commands with the  `send` function. 
-This will change your name to `Foobot`.
+You can generate random text using the `markov_server` process:
 ```
-> nani_bot:send("NICK Foobot").
-```
-
-## markov server
-There's a tiny Markov text chain server. You can get markov by asking:
-```
-> markov_server:generate(20).
+% Generate 13 (or less if it can't find links) tokens of random text
+Tokens = markov_server:generate(13).
 ```
 
-And this will generate `20` words of Markov-chain-based text. 
-
-However, if the server has *not* been seeded yet it will probably blow
-up with some really opaque error. Make sure you always seed it first:
+A quick hint, we can join this easily using the `string:join` function:
 ```
-> markov_server:seed_file("./path/to/file")).
+Tokens = ["some", "random", "text"],,
+Str = string:join(Tokens, " ").
 ```
 
-Or you seed it with just a string, that will work too:
-```
-> markov_server:seed("foo bar quux, random stuff").
-```
-
-That should at least give it something to work with. 
-
-# notes
-* If you don't have any source, I recomment The Tales Of Grimm. Just seed 
-a few of those,  there's some in the repo as well.
-* You probably have to `seed` the server first before it can actually
-serve you something.
-* You can just feed it while it's running. I recommend feeding it 
-the output of the channels its participating in. Just seed all the 
-incoming `PRIVMSG` stuff into `markov_server:seed/1` and the bot will get
-either more interesting or more dumb depending on the the stuff it's fed.
-
-
+Just remember the `generate` function returns tokens.

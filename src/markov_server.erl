@@ -7,7 +7,7 @@
          terminate/2, code_change/3]).
 
 %% API
--export([start/0, start_link/0, stop/0, lookup/1, seed/1, seed_file/1, generate/1]).
+-export([start/0, start_link/0, stop/0, lookup/1, seed/1, seed_file/1, seed_dir/1, generate/1]).
 
 -define(OBJECTS_TABLE, ngrams_objects).
 -define(INDEX_TABLE, ngrams_index).
@@ -36,6 +36,10 @@ seed(Text) ->
 
 seed_file(Path) ->
     gen_server:cast(?SERVER, {seed_file, Path}).
+
+seed_dir(Dir) ->
+    {ok, Files} = file:list_dir(Dir),
+    seed_dir(Dir, Files).
 
 %% Assumes we are seeded
 generate(Count) ->
@@ -82,6 +86,12 @@ code_change(_OldVsn, State, _Extra) ->
 %%%============================================================================
 %%% Internal functions
 %%%============================================================================
+seed_dir(_Dir, []) -> ok;
+
+seed_dir(Dir, [File | Rest]) ->
+    seed_file(filename:join(Dir, File)),
+    seed_dir(Dir, Rest).
+
 random_key(State) ->
     Index = State#state.index,
     KeyCount = State#state.count,

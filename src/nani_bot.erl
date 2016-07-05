@@ -20,7 +20,13 @@
 -define(RPL_NAMREPLY,       "353").
 -define(RPL_ENDOFNAMES,     "366").
 
--record(state, {nick, host, port, conn, channels = []}).
+-define(REAL_NAME, "http://github.com/basp/nanibot").
+
+-record(state, {nick, host, port, conn, channels = [], mw = []}).
+
+callback_mode() -> state_functions.
+name() -> nani_bot.
+real_name() -> ?REAL_NAME.
 
 %%%============================================================================
 %%% API
@@ -70,6 +76,8 @@ handle_event(_EventType, _EventContent, _State, _Data) ->
 %%%============================================================================
 %%% State functions
 %%%============================================================================
+
+%%%----------------------------------------------------------------------------
 standby(cast, connect, Data) ->
     Host = Data#state.host,
     Port = Data#state.port,
@@ -80,6 +88,7 @@ standby(cast, connect, Data) ->
 standby(_EventType, _EventContent, _Data) ->
     {keep_state_and_data, []}.
 
+%%%----------------------------------------------------------------------------
 connecting(cast, success, Data) ->
     Conn = Data#state.conn,
     Nick = Data#state.nick,
@@ -89,6 +98,7 @@ connecting(cast, success, Data) ->
 connecting(_EventType, _EventContent, _Data) ->
     {keep_state_and_data, []}.
 
+%%%----------------------------------------------------------------------------
 registering(cast, {received, Msg}, Data) ->
     {match, Match} = nani_utils:parse(Msg),
     case Match of 
@@ -108,6 +118,7 @@ registering(internal, {ping, Ping}, Data) ->
 registering(_EventType, _EventContent, _Data) ->
     {keep_state_and_data, []}.
 
+%%%----------------------------------------------------------------------------
 ready(cast, {send, Msg}, Data) ->
     Conn = Data#state.conn,
     send(Conn, Msg),
@@ -126,7 +137,8 @@ ready(internal, {part, _Props}, _Data) ->
 ready(cast, {received, Msg}, _Data) ->
     {match, Match} = nani_utils:parse(Msg),
     case Match of
-        [_, <<?RPL_NAMREPLY>>, _, _, _, Names] ->
+        [_, <<?RPL_NAMREPLY>>, _, _, _, NameData] ->
+            Names = string:tokens(binary_to_list(NameData), " \t\r\n"),
             Actions = [{next_event, internal, {names, Names}}],
             {keep_state_and_data, Actions}; 
         [_, _, <<"PING">>, Ping] ->
@@ -145,6 +157,11 @@ ready(cast, {received, Msg}, _Data) ->
             {keep_state_and_data, []}
     end;
 
+ready(internal, {names, Names}, Data) ->
+    Conn = Data#state.conn,
+    send_hello(Conn, Names),
+    {keep_state_and_data, []};
+
 ready(internal, {ping, Ping}, Data) ->
     Conn = Data#state.conn,
     send_pong(Conn, Ping),
@@ -156,10 +173,6 @@ ready(_EventType, _EventContent, _Data) ->
 %%%============================================================================
 %%% Internal functions
 %%%============================================================================
-callback_mode() -> state_functions.
-name() -> nani_bot.
-real_name() -> "http://github.com/basp/nanibot".
-
 send(Conn, Data) -> 
     nani_conn:send(Conn, Data).
 
@@ -169,3 +182,10 @@ send_pong(Conn, Ping) ->
 send_login(Conn, Nick) ->
     send(Conn, ["NICK ", Nick]),
     send(Conn, ["USER ", Nick, " 8 * :", real_name()]).
+
+send_hello(Conn, Nick, Channel, Names) ->
+    Others = lists:filter(fun (X) -> X =/= Nick),
+    case Others of
+        [Someone] -> "Hiya " ++ Someone ++ "!",
+        [_People] -> "Hi all!"
+    end.

@@ -3,7 +3,7 @@
 -behaviour(gen_statem).
 
 %% API
--export([start/1, connect/0, stop/0, send/1, join/1, say/2, emote/2]).
+-export([start/1, connect/0, stop/0, send/1, join/1, say/2, emote/2, use/2]).
 
 %% state functions
 -export([standby/3, connecting/3, registering/3, ready/3]).
@@ -22,7 +22,7 @@
 
 -define(REAL_NAME, "http://github.com/basp/nanibot").
 
--record(state, {nick, host, port, conn, channels = [], mw = []}).
+-record(state, {nick, host, port, conn}).
 
 callback_mode() -> state_functions.
 name() -> nani_bot.
@@ -33,6 +33,9 @@ real_name() -> ?REAL_NAME.
 %%%============================================================================
 start(Config) -> 
     gen_statem:start({local, name()}, ?MODULE, Config, []).
+
+use(Event, {_M, _F, _A} = Middleware) ->
+    gen_statem:cast(name(), {use, Event, Middleware}).
 
 connect() -> 
     gen_statem:cast(name(), connect).
@@ -119,27 +122,31 @@ registering(_EventType, _EventContent, _Data) ->
     {keep_state_and_data, []}.
 
 %%%----------------------------------------------------------------------------
-ready(cast, {send, Msg}, Data) ->
+ready(internal, {ping, Ping}, Data) ->
     Conn = Data#state.conn,
-    send(Conn, Msg),
+    send_pong(Conn, Ping),
     {keep_state_and_data, []};
 
-ready(internal, {join, Props}, Data) ->
-    Channels = Data#state.channels,
-    NewChannel = proplists:get_value(channel, Props),
+ready(internal, {join, Props}, _Data) ->
+    _Channel = proplists:get_value(channel, Props), 
     _Nick = proplists:get_value(channel, Props),
-    NewData = Data#state{channels = [NewChannel | Channels]},
-    {keep_state, NewData, []};
+    {keep_state_and_data, []};
 
 ready(internal, {part, _Props}, _Data) ->
+    {keep_state_and_data, []};
+
+ready(internal, {names, Channel, Names}, Data) ->
+    Conn = Data#state.conn,
+    Nick = Data#state.nick,
+    %io:format("Received names ~p for channel ~p~n", [Names, Channel]),
     {keep_state_and_data, []};
 
 ready(cast, {received, Msg}, _Data) ->
     {match, Match} = nani_utils:parse(Msg),
     case Match of
-        [_, <<?RPL_NAMREPLY>>, _, _, _, NameData] ->
+        [_, <<?RPL_NAMREPLY>>, _Nick, _, Channel, NameData] ->
             Names = string:tokens(binary_to_list(NameData), " \t\r\n"),
-            Actions = [{next_event, internal, {names, Names}}],
+            Actions = [{next_event, internal, {names, Channel, Names}}],
             {keep_state_and_data, Actions}; 
         [_, _, <<"PING">>, Ping] ->
             Actions = [{next_event, internal, {ping, Ping}}],
@@ -157,14 +164,9 @@ ready(cast, {received, Msg}, _Data) ->
             {keep_state_and_data, []}
     end;
 
-ready(internal, {names, Names}, Data) ->
+ready(cast, {send, Msg}, Data) ->
     Conn = Data#state.conn,
-    send_hello(Conn, Names),
-    {keep_state_and_data, []};
-
-ready(internal, {ping, Ping}, Data) ->
-    Conn = Data#state.conn,
-    send_pong(Conn, Ping),
+    send(Conn, Msg),
     {keep_state_and_data, []};
 
 ready(_EventType, _EventContent, _Data) ->
@@ -184,8 +186,8 @@ send_login(Conn, Nick) ->
     send(Conn, ["USER ", Nick, " 8 * :", real_name()]).
 
 send_hello(Conn, Nick, Channel, Names) ->
-    Others = lists:filter(fun (X) -> X =/= Nick),
+    Others = lists:filter(fun (X) -> X =/= Nick end, Names),
     case Others of
-        [Someone] -> "Hiya " ++ Someone ++ "!",
-        [_People] -> "Hi all!"
+        [Someone] -> "Hiya " ++ Someone ++ "!";
+        _ -> "Hi all!"
     end.

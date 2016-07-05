@@ -3,7 +3,7 @@
 %% API
 -export([tokenize/1, ngrams/2, bigrams/1, trigrams/1, analyze/2]).
 
--define(SEPARATORS, " \t\r\n~!@#$%^&*-_+=[]{}\\|;:\",.<>?/").
+-define(SEPARATORS, " \t\r\n~!@#$%^&*-_+=()[]{}\\|;:\",.<>?/").
 
 -spec tokenize(string()) -> [string()].
 -spec ngrams(integer(), [string()]) -> [tuple()].
@@ -16,6 +16,10 @@
 %%%============================================================================
 tokenize(Text) -> 
     string:tokens(Text, ?SEPARATORS).
+
+ngrams(_Order, [_Something]) -> [];
+
+ngrams(_order, [_Some, _Another]) -> [];
 
 ngrams(Order, Tokens) ->
     ngrams(Order, Tokens, []).

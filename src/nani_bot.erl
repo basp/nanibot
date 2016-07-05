@@ -3,7 +3,7 @@
 -behaviour(gen_statem).
 
 %% API
--export([start/1, connect/0, stop/0, send/1, join/1, say/2, emote/2, use/2]).
+-export([start/1, connect/0, stop/0, send/1, join/1, say/2, emote/2, use/2, speak/2]).
 
 %% state functions
 -export([standby/3, connecting/3, registering/3, ready/3]).
@@ -43,6 +43,11 @@ connect() ->
 join(Channel) ->
     Msg = ["JOIN ", Channel],
     gen_statem:cast(name(), {send, Msg}).
+
+speak(To, Count) ->
+    Tokens = markov_server:generate(Count),
+    Text = string:join(Tokens, " "),
+    say(To, Text).
 
 say(To, Text) ->
     Msg = ["PRIVMSG ", To, " :", Text],
@@ -138,7 +143,11 @@ ready(internal, {part, _Props}, _Data) ->
 ready(internal, {names, Channel, Names}, Data) ->
     Conn = Data#state.conn,
     Nick = Data#state.nick,
-    %io:format("Received names ~p for channel ~p~n", [Names, Channel]),
+    {keep_state_and_data, []};
+
+ready(internal, {privmsg, Props}, _Data) ->
+    Text = proplists:get_value(text, Props),
+    markov_server:seed(binary_to_list(Text)),
     {keep_state_and_data, []};
 
 ready(cast, {received, Msg}, _Data) ->

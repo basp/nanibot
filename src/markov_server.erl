@@ -86,12 +86,16 @@ code_change(_OldVsn, State, _Extra) ->
 %%%============================================================================
 %%% Internal functions
 %%%============================================================================
+
+
+%%%----------------------------------------------------------------------------
 seed_dir(_Dir, []) -> ok;
 
 seed_dir(Dir, [File | Rest]) ->
     seed_file(filename:join(Dir, File)),
     seed_dir(Dir, Rest).
 
+%%%----------------------------------------------------------------------------
 random_key(State) ->
     Index = State#state.index,
     KeyCount = State#state.count,
@@ -100,6 +104,7 @@ random_key(State) ->
     [{_Index, Key}] = ets:lookup(Index, RandomIndex),
     Key.
     
+%%%----------------------------------------------------------------------------
 random_next(Key, State) ->
     Objects = State#state.objects,
     case ets:lookup(Objects, Key) of
@@ -107,6 +112,7 @@ random_next(Key, State) ->
         [{_, Candidates}] -> Candidates
     end. 
 
+%%%----------------------------------------------------------------------------
 generate(0, _Key, _State, Acc) -> 
     lists:reverse(Acc);
 
@@ -120,6 +126,7 @@ generate(Count, {_, B} = Key, State, Acc) ->
             generate(Count - 1, NextKey, State, [Head | Acc])
     end.
 
+%%%----------------------------------------------------------------------------
 seed(Text, State) ->
     Index = State#state.index,
     Objects = State#state.objects,
@@ -127,11 +134,15 @@ seed(Text, State) ->
     Grams = analyze(2, string:to_lower(Text)),
     store(Index, Objects, Grams, Count).
 
+%%%----------------------------------------------------------------------------
+analyze(_Order, []) -> [];
+
 analyze(Order, Text) ->
     Tokens = markov:tokenize(Text),
     Grams = markov:ngrams(Order, Tokens),
     markov:analyze(Order, Grams).
 
+%%%----------------------------------------------------------------------------
 store(_Index, _Objects, [], Count) -> Count;
 
 store(Index, Objects, [{Key, Following} | Rest], Count) ->

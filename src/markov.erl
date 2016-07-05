@@ -5,6 +5,12 @@
 
 -define(SEPARATORS, " \t\r\n~!@#$%^&*-_+=[]{}\\|;:\",.<>?/").
 
+-spec tokenize(string()) -> [string()].
+-spec ngrams(integer(), [string()]) -> [tuple()].
+-spec analyze(integer(), [tuple()]) -> [{tuple(), string()}]. 
+-spec bigrams([string()]) -> [{string(), string()}].
+-spec trigrams([string()]) -> [{string(), string(), string()}].
+
 %%%============================================================================
 %%% API
 %%%============================================================================

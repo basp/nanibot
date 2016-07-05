@@ -7,7 +7,7 @@
          terminate/2, code_change/3]).
 
 %% API
--export([start/0, start_link/0, stop/0, lookup/1, seed/1, seed_file/1, generate/1, spew_random/0, spew_random/1]).
+-export([start/0, start_link/0, stop/0, lookup/1, seed/1, seed_file/1, generate/1]).
 
 -define(OBJECTS_TABLE, ngrams_objects).
 -define(INDEX_TABLE, ngrams_index).
@@ -88,7 +88,6 @@ random_key(State) ->
     % TODO: I'm not totally feeling happy about this
     RandomIndex = rand:uniform(KeyCount) - 1,
     [{_Index, Key}] = ets:lookup(Index, RandomIndex),
-    %io:format("~p~n", [Key]),
     Key.
     
 random_next(Key, State) ->

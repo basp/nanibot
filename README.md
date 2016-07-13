@@ -245,4 +245,6 @@ additional index table. This is just an `index() :: integer()` and an `ngram()` 
 
 Now we just keep track of the number of keys in our runtime state (we need that anyway 
 to generate new index numbers) and basicallly use that as our upper limit whenever we 
-need to generate a new random key. 
+need to generate a new random key. Then we'll update the ngrams table and the index
+table as necessary. Depending on whether we found an exisitng ngram or a new one when
+updating the `memory`.

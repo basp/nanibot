@@ -152,4 +152,36 @@ Bigrams = [
     {"this", "sentence"}].
 ```
 
+This is what `markov:bigrams/1` does. This is just a helper that
+calls the more generic `markov:ngrams/2` function which can be used
+to create ngrams up to rank 5.
 
+Now we have the start of something interesting but we're not there
+yet. The next is to use these bigrams in order to create a tuple
+consisting of the bigram and a list of words that are likely to
+follow it.
+
+So what the algorithm does next is basically scan through the ngrams
+and depending on whether it's a new `ngram()` or a known one, either
+remember `{ngram(), [token()]}` or retrieve it, append `token()` to the list 
+of known tokens and store it again.
+
+In other words, what you're creating is a map from `ngram()` to `[token()]`.
+Let's call this *map* (or dictionary) `memory`.
+
+Once you have such a map you're able to generate random stuff that's famous
+for utterly nonsense most of the time even though it seems to make sense... 
+Sometimes.
+
+0. Our initial state is an empty list `[token()]` *S* and the `memory` dictionary
+as described above. Additionaly we picked a key *K* from the known keys in `memory`.  
+1. We get the value associated with *K* (which is, a `ngram()` tuple) from `memory`. 
+This will give us a `{ngram(), Q = [token()]}`. That is, the key we looked for and 
+a list of tokens.
+2. We'll pick some `token()` from the list of tokens `[token()]` (*Q*).
+3. We'll append this `token()` *T* to *S* (the list of selected tokens `[token()]`.
+4. Now we need to combine *K* with *T* in some way that it produces a new key *K2*;
+how to do this depends on the rank of ngram(s) your dealing with. For illustration
+We'll focus on the bigram case. This assumes that *K* is a tuple `{token(), token()}`.
+5. We combine *K* `{A, B}` with *T* so that we have a new tuple *K2* `{B, T}`. 
+6. And now we repeat from step 1. 

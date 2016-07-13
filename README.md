@@ -241,12 +241,12 @@ the length of *S*.
 Now we'll end up with a bunch of random tokens in *S* which we basically can just return, 
 join and use as some jibberish.
 ```
-S = [].                                 % 0
-K = {A, B} = memory:get_random_key().   % 0
-{K, Q} = memory:get(K).                 % 1
-T = utils:random_element(Q).            % 2
-S2 = [T | S].                           % 3/4
-K2 = {B, T}.                            % 4/5
+S = [].                                 % 1
+K = {A, B} = memory:get_random_key().   % 1
+{K, Q} = memory:get(K).                 % 2
+T = utils:random_element(Q).            % 3
+S2 = [T | S].                           % 4/5
+K2 = {B, T}.                            % 5/6
 
 % Functionally, we would recurse with `K2` and accumulator `S2`.
 % Imperatively we can say that `K <- K2` and `S <- S2`.

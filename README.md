@@ -12,12 +12,12 @@ Once you have an Erlang shell up and running we can continue.
 There's no Rebar or something yet so we have toi do this the clunky way. Once
 in your Erlang shell:
 ```
-> cd("./dir/where/nani/is/installed").
+> cd("./dir/where/nani/is/installed/src").
 ```
 
 After that we compile all modulels:
 ```
-> lc([markov, markov_server, nani_conn, nani_botr]).
+> lc([markov, markov_server, nani_utils, nani_conn, nani_bot]).
 ```
 
 ### starting
@@ -26,9 +26,12 @@ We need some `Config` such as:
 > Config = [{host, "irc.freenode.net"}, {port, 6667}, {nick, "YourBotNick"}].
 ```
 
+So we know how to connect to the IRC network. Note that in most cases you 
+have to register your bot (nick) first.
+
 Now we are ready to connect. First start the bot:
 ```
-> nani_bot:start_link(Config).
+> nani_bot:start(Config).
 ```
 
 And then tell the bot to connect:
@@ -60,7 +63,13 @@ Or emote something:
 > nani_bot:emote("##somechannel", "hops around nervously").
 ```
 
-You can generate random text using the `markov_server` process:
+You can generate random text using the `markov_server` process. 
+First we start it up:
+```
+> markov_server:start().
+```
+
+And then we generate some tokens:
 ```
 % Generate 13 (or less if it can't find links) tokens of random text
 Tokens = markov_server:generate(13).
@@ -68,8 +77,12 @@ Tokens = markov_server:generate(13).
 
 A quick hint, we can join this easily using the `string:join` function:
 ```
-Tokens = ["some", "random", "text"],,
-Str = string:join(Tokens, " ").
+Text = string:join(markov_server:generate(13), " ").
 ```
 
-Just remember the `generate` function returns tokens.
+Just remember, the `generate` function returns tokens.
+
+# TODO
+* Add proper supervisor tree(s)
+* Split off markov_server to seperate app
+* Complete proper OTP application(s)

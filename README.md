@@ -304,3 +304,16 @@ return `void`, `ignored`, `0` whatever. And queries should return something
 useful. This might sound logical but a lot of people still get it wrong. However
 if you're reading this you probably know a thing or two about functional programming
 so hopefully you know better.
+
+## random stuff
+Remember you do func assignment in the shell, I usually have something like:
+```
+> R = fun (Count) -> 
+            Msg = string:join(markov_server:generate(Count), " "),
+            nani_bot:say("##somechan", Msg) 
+        end.
+```
+
+And then I can just go `R(13)` to spew some random dribble on some kind of 
+channel. You could parametrize that as well if you're really 
+[fansy](http://www.notaddicted.com/fansythefamous.php).

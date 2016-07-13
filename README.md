@@ -3,14 +3,15 @@ Erlang IRC bot.
 
 ## getting started
 ### the erlang shell
-Make sure you have some kind of Erlang running. There's a specialized shell 
-for Win Windows. Look for instructions in the documentation.
+The instructions below assume you are running an Erlang shell. If you're 
+unsure how to do this on your system please checkout [the official site](https://www.erlang.org).
 
 Once you have an Erlang shell up and running we can continue.
 
 ### compiling
-There's no Rebar or something yet so we have toi do this the clunky way. Once
-in your Erlang shell:
+There's no Rebar or something yet so we have to do this the clunky way (sorry). 
+
+Once in your Erlang shell:
 ```
 > cd("./dir/where/nani/is/installed/src").
 ```
@@ -19,6 +20,13 @@ After that we compile all modulels:
 ```
 > lc([markov, markov_server, nani_utils, nani_conn, nani_bot]).
 ```
+
+#### note
+There might be a missing (required) module in the list above. Usually, while I'm working
+on the bot or related I just have it running and pickup the changes as I go. This usually
+does result in the bot crashing whenever I can't be bothered to update the `code_change` 
+callback but that's not so frequently and most of the development is in middleware nowadays
+which should not have an impact on the bot server process anyways.
 
 ### starting
 We need some `Config` such as:

@@ -240,6 +240,17 @@ the length of *S*.
 
 Now we'll end up with a bunch of random tokens in *S* which we basically can just return, 
 join and use as some jibberish.
+```
+S = [].                                 % 0
+K = {A, B} = memory:get_random_key().   % 0
+{K, Q} = memory:get(K).                 % 1
+T = utils:random_element(Q).            % 2
+S2 = [T | S].                           % 3/4
+K2 = {B, T}.                            % 4/5
+
+% Functionally, we would recurse with K2 and accumulator S.
+% Imperatively we can say that `K <- K2` or `K := K2` (if you're a Pascal afficionado).
+```
 
 ## how it's stored internally
 We're using a very simple setup of a table consiting tuples of tokes (ngrams) and a list

@@ -108,6 +108,7 @@ registering(cast, {received, Msg}, Data) ->
     {match, Match} = nani_utils:parse(Msg),
     case Match of 
         [_, <<?RPL_WELCOME>>, _, _] ->
+            %% io:format("Ready.~n"),
             {next_state, ready, Data};
         [_, _, <<"PING">>, Ping] ->
             Actions = [{next_event, internal, {ping, Ping}}],

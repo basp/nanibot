@@ -39,12 +39,19 @@ And then tell the bot to connect:
 > nani_bot:connect().
 ``` 
 
-And... Nothing happens. You might see some output going across your screen, 
-that's normal. The bot is connecting. Once it's ready you can tell it to join
-some channel:
+And... Eventually you should get some notifications in your shell. 
+The bot is connecting. Once it's ready you can tell it to join some channel:
 ```
 > nani_bot:join("##somechannel").
 ```
+
+Note that the bot is ready once it received the `RPL_WELCOME` message 
+from the server. At this point you can send it other commands (see below).
+
+Note that when dealing with the bot in an interactive way (as we are doing)
+in the Erlang shell, we have to watch for this event. When you register
+middleware (plugins) this will be handled automatically and you can be sure
+it will only run once the bot is really ready.
 
 ### doing stuff
 As of yet, the bot doesn't do anything by itself. However you can do some
@@ -96,6 +103,10 @@ a percentage of them (this can work surprisingly well).
 Or you can increase the bot's vocabulary just by seeding it
 more stuff while it's running using any of the API's and 
 the Erlang shell. 
+
+A fun thing to do is to seed the bot with a minimal amount of 
+text (basically enough to generate at least one ngram) and have
+it seed from the chat itself from there.
 
 Note that there's no way to save the bots markov memory just yet 
 (it's two ETS tables) although it should be trivial to implement. 

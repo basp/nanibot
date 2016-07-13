@@ -148,8 +148,8 @@ Just remember, the `generate/1` function returns tokens.
 # todo
 * Finish and incorporate middle-ware (plugin) server
 * Add proper supervisor tree(s)
-* Split off markov_server to seperate app
 * Complete proper OTP application(s)
+* Split off markov_server to seperate app (maybe)
 
 # notes on the random text generation
 This is just for those who are interested or wanna make sense

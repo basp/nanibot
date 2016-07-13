@@ -63,6 +63,10 @@ Or emote something:
 > nani_bot:emote("##somechannel", "hops around nervously").
 ```
 
+Or do more or less everything the IRC protocol supports using the `send` API:
+```
+```
+
 You can generate random text using the `markov_server` process. 
 First we start it up:
 ```

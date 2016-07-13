@@ -296,11 +296,9 @@ remember(Key :: ngram(), Candidate :: token()) -> ignored.
 retrieve(Key :: ngram()) -> Candidates :: [token()]. 
 ```
 
-#### note
-This API will probably be formalized in the next (0.0.2) version.
-
-#### note
-Having `ignored` feels like a bit of a cop out but I kinda like it for stuff
+#### notes
+* This API will probably be formalized in the next (0.0.2) version.
+* Having `ignored` feels like a bit of a cop out but I kinda like it for stuff
 that is really a **command** and not a **query**. In other words, commands should
 return `void`, `ignored`, `0` whatever. And queries should return something 
 useful. This might sound logical but a lot of people still get it wrong. However

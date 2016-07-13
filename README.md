@@ -101,16 +101,14 @@ before it's seeded. So let's do seed it then, there's a few API's:
 > markov_server:seed_file("./chatlog.txt").
 ```
 
-Note that seeding is additive. For example, you can grow the 
+Seeding is additive. For example, you can grow the 
 bot's markov potential in real-time by using the chat messages 
 you receive and the `seed` function. You could opt to filter
 out anything the bot's own messages or even decide to inlude
 a percentage of them (this can work surprisingly well). 
 
-Note that by default, the bot *is* 
-[seeding itself](https://github.com/basp/nanibot/blob/master/src/nani_bot.erl#L146)
+By default, the bot *is* [seeding itself](https://github.com/basp/nanibot/blob/master/src/nani_bot.erl#L148)
 with incoming chat messages.
-
 
 Or you can increase the bot's vocabulary just by seeding it
 more stuff while it's running using any of the API's and 

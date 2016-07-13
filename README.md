@@ -257,10 +257,15 @@ We're using a very simple setup of a table consiting tuples of tokes (ngrams) an
 of tokens (candidates). It's a map of *K* `ngram()` to *V* `[token()]` where:
 
 ```
-token() :: term() % basically anything your language can support
+token() :: term(). % basically anything your language can support
+
 ngram() :: {token(), token()}
          | ...  
-         | {token(), token(), token(), token(), token()}
+         | {token(), token(), token(), token(), token()}. % ngrams!
+
+% a key (ngram) and a list of candidate following tokens
+entry() :: {ngram, [token()]}.
+
 ```
 
 You can deal with ngrams of a particalar rank only or mix and match if you want. Although

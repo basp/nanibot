@@ -268,16 +268,19 @@ you will have to extend the algorithm which only is supported to deal with ngram
 of a uniform rank (and only bigrams too currently).
 
 The `{Key :: ngram(), Value :: [token()]` values are basically stored as is. The key is
-the `ngram()` and the value is the token list `[token()]`. However, we wanna lookup
-random keys efficiently and scanning the table is highly undesirable so we'll use an 
+the `ngram()` and the value is the candidate list `[token()]`. However, we wanna lookup
+random keys efficiently and **scanning** the table is **not undesirable** so we'll use an 
 additional index table. This is just an `index() :: integer()` and an `ngram()` key:
-`{index :: integer(), ngram()}` where `index()` is our key. 
+`{index :: integer(), ngram()}` where `index()` is our key.  
 
 Now we just keep track of the number of keys in our runtime state (we need that anyway 
 to generate new index numbers) and basicallly use that as our upper limit whenever we 
 need to generate a new random key. Then we'll update the ngrams table and the index
 table as necessary. Depending on whether we found an exisitng ngram or a new one when
-updating the `memory`.
+updating the `memory`. 
+
+Now we can just roll any kind of number between `StartIndex` and `NextIndex` and we
+fetch any key from `memory` at *O(1)* speed. No scanning.
 
 ## about `memory`
 If we have been a bit opaque about how memory itself is implemented that is

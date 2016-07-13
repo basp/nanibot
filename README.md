@@ -127,7 +127,8 @@ text (basically enough to generate at least one ngram) and have
 it seed from the chat itself from there.
 
 Note that there's no API to save the bots markov memory just yet 
-(it's two ETS tables) although it should be trivial to implement. 
+(it's two ETS tables) although it should be trivial to implement
+(just convert to DETS :)). 
 The bot is still in very early stages so for now it's convenient 
 just to wipe memory on process exit. 
 

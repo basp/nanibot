@@ -227,7 +227,7 @@ We're using a very simple setup of a table consiting tuples of tokes (ngrams) an
 of tokens (candidates). It's a map of *K* `ngram()` to *V* `[token()]` where:
 
 ```
-token() :: term() % basically anything your language can supports
+token() :: term() % basically anything your language can support
 ngram() :: {token(), token()}
          | ...  
          | {token(), token(), token(), token(), token()}

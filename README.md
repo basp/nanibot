@@ -78,7 +78,7 @@ Or do more or less everything the IRC protocol supports using the `send` API:
 ### markov text
 You can generate random text using the `markov_server` process. 
 
-#### Notes 
+#### notes 
 * The `markov_server` should be able to crash without impacting the bot.
 * This also means the bot should function without the `markov_server`.
 * Currently it needs to be seeded with at least somehting *reasonable*;

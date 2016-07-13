@@ -184,4 +184,4 @@ a list of tokens.
 how to do this depends on the rank of ngram(s) your dealing with. For illustration
 We'll focus on the bigram case. This assumes that *K* is a tuple `{token(), token()}`.
 5. We combine *K* `{A, B}` with *T* so that we have a new tuple *K2* `{B, T}`. 
-6. And now we repeat from step 1. 
+6. Repeat from step 1 substituting *K* with our new *K2*. 

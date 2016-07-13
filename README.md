@@ -218,6 +218,10 @@ the `memory` is not meant to grow *that* big at this point in development
 so I don't wanna overload the bot with stuff that might be better implemented
 when the design is more stable.
 
+Concluding, even when seeding the bot with a substantial amount of text
+the actual memory required by the `memory` ETS tables is quite low. At least
+compared to everything else you're running.
+
 ## generation of (random) tokens
 
 Once you have such a map you're able to generate random stuff that's famous

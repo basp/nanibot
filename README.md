@@ -258,3 +258,20 @@ to generate new index numbers) and basicallly use that as our upper limit whenev
 need to generate a new random key. Then we'll update the ngrams table and the index
 table as necessary. Depending on whether we found an exisitng ngram or a new one when
 updating the `memory`.
+
+## about `memory`
+If we have been a bit opaque about how memory itself is implemented that is
+because it doesn't really matter. In fact, it might even be better of as pair of 
+functions:
+```
+remember(Key :: ngram(), Candidate :: token()) -> ignored.
+retrieve(Key :: ngram()) -> Candidates :: [token()]. 
+```
+
+#### note
+Having `ignored` feels like a bit of a cop out but I kinda like it for stuff
+that is really a **command** and not a **query**. In other words, commands should
+return `void`, `ignored`, `0` whatever. And queries should return something 
+useful. This might sound logical but a lot of people still get it wrong. However
+if you're reading this you probably know a thing or two about functional programming
+so hopefully you know better.

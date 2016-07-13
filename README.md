@@ -290,11 +290,14 @@ fetch any key from `memory` at *O(1)* speed. No scanning.
 ## about `memory`
 If we have been a bit opaque about how memory itself is implemented that is
 because it doesn't really matter. In fact, it might even be better of as pair of 
-functions:
+functions. Below is the required interface for any `memory` substitute.
 ```
 remember(Key :: ngram(), Candidate :: token()) -> ignored.
 retrieve(Key :: ngram()) -> Candidates :: [token()]. 
 ```
+
+#### note
+This API will probably be formalized in the next (0.0.2) version.
 
 #### note
 Having `ignored` feels like a bit of a cop out but I kinda like it for stuff

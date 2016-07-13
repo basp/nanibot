@@ -249,7 +249,7 @@ join and use as some jibberish.
 Below is the code in *pseudo* Erlang corresponding to the steps mentioned above:
 ```
 S = [].                                 % 1
-K = {A, B} = memory:get_random_key().   % 1
+K = {A, B} = memory:get_random_key().   % 1, `bigram' case
 {K, Q} = memory:get(K).                 % 2
 T = utils:random_element(Q).            % 3
 S2 = [T | S].                           % 4/5
@@ -281,7 +281,7 @@ of a uniform rank (and only bigrams too currently).
 
 The `{Key :: ngram(), Value :: [token()]` values are basically stored as is. The key is
 the `ngram()` and the value is the candidate list `[token()]`. However, we wanna lookup
-random keys efficiently and **scanning** the table is **not undesirable** so we'll use an 
+random keys efficiently and **scanning** the table is **undesirable** so we'll use an 
 additional index table. This is just an `index() :: integer()` key and an `ngram()` value:
 `{index :: integer(), ngram()}`.  
 

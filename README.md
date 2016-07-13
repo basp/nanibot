@@ -192,7 +192,7 @@ calls the more generic `markov:ngrams/2` function which can be used
 to create ngrams up to rank 5.
 
 Now we have the start of something interesting but we're not there
-yet. The next is to use these bigrams in order to create a tuple
+yet. Next we need to use these bigrams in order to create a tuple
 consisting of the bigram and a list of words that are likely to
 follow it.
 

@@ -169,6 +169,20 @@ of known tokens and store it again.
 In other words, what you're creating is a map from `ngram()` to `[token()]`.
 Let's call this *map* (or dictionary) `memory`.
 
+Note that this implementation is not efficient on memory as we are storing
+tokens more than one time. This conveniently allows us to pick any random
+one without any work. 
+
+We could (for example) make it more efficient to pack up *L* into
+a list `[{integer(), token()}]` tuples so that we can still perform a 
+(random) lookup based on chance as well as store them in a more efficient 
+manner.  
+
+For now I kinda like the simplicity of the algorithm and to be honest,
+the `memory` is not meant to grow *that* big at this point in development
+so I don't wanna overload the bot with stuff that might be better implemented
+when the design is more stable.
+
 ## generation of (random) tokens
 
 Once you have such a map you're able to generate random stuff that's famous

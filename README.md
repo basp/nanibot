@@ -107,7 +107,7 @@ you receive and the `seed` function. You could opt to filter
 out anything the bot's own messages or even decide to inlude
 a percentage of them (this can work surprisingly well). 
 
-By default, the bot *is* [seeding itself](https://github.com/basp/nanibot/blob/master/src/nani_bot.erl#L148)
+By **default**, the bot *is* [seeding itself](https://github.com/basp/nanibot/blob/master/src/nani_bot.erl#L148)
 with incoming chat messages.
 
 Or you can increase the bot's vocabulary just by seeding it

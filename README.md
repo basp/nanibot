@@ -221,3 +221,28 @@ the length of *S*.
 
 Now we'll end up with a bunch of random tokens in *S* which we basically can just return, 
 join and use as some jibberish.
+
+## how it's stored internally
+We're using a very simple setup of a table consiting tuples of tokes (ngrams) and a list
+of tokens (candidates). It's a map of *K* `ngram()` to *V* `[token()]` where:
+
+```
+token() :: term() % basically anything your language can supports
+ngram() :: {token(), token()}
+         | ...  
+         | {token(), token(), token(), token(), token()}
+```
+
+You can deal with ngrams of a particalar rank only or mix and match if you want. Although
+you will have to extend the algorithm which only is supported to deal with ngrams
+of a uniform rank (and only bigrams too currently).
+
+The `{Key :: ngram(), Value :: [token()]` values are basically stored as is. The key is
+the `ngram()` and the value is the token list `[token()]`. However, we wanna lookup
+random keys efficiently and scanning the table is highly undesirable so we'll use an 
+additional index table. This is just an `index() :: integer()` and an `ngram()` key:
+`{index :: integer(), ngram()}` where `index()` is our key. 
+
+Now we just keep track of the number of keys in our runtime state (we need that anyway 
+to generate new index numbers) and basicallly use that as our upper limit whenever we 
+need to generate a new random key. 

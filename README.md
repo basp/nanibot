@@ -120,3 +120,36 @@ Just remember, the `generate` function returns tokens.
 * Add proper supervisor tree(s)
 * Split off markov_server to seperate app
 * Complete proper OTP application(s)
+
+# notes on the random text generation
+This is just for those who are interested or wanna make sense
+of the stuff in `markov.erl` (this includes me in a few months).
+
+## it all starts with ngrams
+The algorithm works with lists (or sequences) of tokens. What your
+token is doesn't really matter. In this case we use strings. It
+starts by converting tokens into so called *ngrams*. An `ngram`
+is basically a tuple of tokens that appeared in that order in some
+source of tokens.
+
+Let's consider this sentence. In tokens it would like:
+```
+Tokens = ["let's", "consider", "this", "sentence"].
+```
+
+Note that we normalized whitespace, capitalization and most of 
+the punctuation. Depending on your scenario, it's often a good
+idea to sanitize your source somewhat before you use it to feed 
+your markov generator.
+
+Once we have a list of tokens (whatever they might be) we can use
+this to create ngrams. Let's start with *bigrams* (ngrams of rank 2, 
+e.g. normal tuples):
+```
+Bigrams = [
+    {"let's", "consider"}, 
+    {"consider", "this"}, 
+    {"this", "sentence"}].
+```
+
+

@@ -87,6 +87,21 @@ There's a few API's to seed it:
 > markov_server:seed_file("./chatlog.txt").
 ```
 
+Note that seeding is additive. For example, you can grow the 
+bot's markov potential in real-time by using the chat messages 
+you receive and the `seed` function. You could opt to filter
+out anything the bot's own messages or even decide to inlude
+a percentage of them (this can work surprisingly well). 
+
+Or you can increase the bot's vocabulary just by seeding it
+more stuff while it's running using any of the API's and 
+the Erlang shell. 
+
+Note that there's no way to save the bots markov memory just yet 
+(it's two ETS tables) although it should be trivial to implement. 
+The bot is still in very early stages so for now it's convenient 
+just to wipe memory on process exit. 
+
 After we have seeded the server we are ready to generate some tokens:
 ```
 % Generate 13 (or less if it can't find links) tokens of random text

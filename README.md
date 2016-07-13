@@ -80,6 +80,7 @@ You can generate random text using the `markov_server` process.
 
 #### Notes 
 * The `markov_server` should be able to crash without impacting the bot.
+* This also means the bot should function without the `markov_server`.
 * Currently it needs to be seeded with at least somehting *reasonable*;
 where reasonable is something that results in at least one lookup 
 (i.e. *bigram* and at least one candidate *token*).

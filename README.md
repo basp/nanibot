@@ -65,15 +65,29 @@ Or emote something:
 
 Or do more or less everything the IRC protocol supports using the `send` API:
 ```
+> nani_bot:send("NICK Mebibot").
 ```
 
+### markov text
 You can generate random text using the `markov_server` process. 
+
 First we start it up:
 ```
 > markov_server:start().
 ```
 
-And then we generate some tokens:
+Currently, the `markov_server` will crash if it isn't seeded.
+There's a few API's to seed it:
+
+* `seed` takes a string (the text to seed the generator with)
+* `seed_file` takes a path to a text file
+* `seed_dir` takes a path to a directory containing text files
+
+```
+> markov_server:seed_file("./chatlog.txt").
+```
+
+After we have seeded the server we are ready to generate some tokens:
 ```
 % Generate 13 (or less if it can't find links) tokens of random text
 Tokens = markov_server:generate(13).

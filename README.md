@@ -126,7 +126,7 @@ A fun thing to do is to seed the bot with a minimal amount of
 text (basically enough to generate at least one ngram) and have
 it seed from the chat itself from there.
 
-Note that there's no API to save the bots markov memory just yet 
+Note that there's no API to save the bot's markov memory just yet 
 (it's two ETS tables) although it should be trivial to implement
 (just convert to DETS :)). 
 The bot is still in very early stages so for now it's convenient 
@@ -172,7 +172,7 @@ Let's consider this sentence. In tokens it would like:
 Tokens = ["let's", "consider", "this", "sentence"].
 ```
 
-Note that we normalized whitespace, capitalization and most of 
+We normalized whitespace, capitalization and most of 
 the punctuation. Depending on your scenario, it's often a good
 idea to sanitize your source somewhat before you use it to feed 
 your markov generator.
@@ -204,7 +204,7 @@ of known tokens and store it again.
 In other words, what you're creating is a map from `ngram()` to `[token()]`.
 Let's call this *map* (or dictionary) `memory`.
 
-Note that this implementation is not efficient on memory as we are storing
+This implementation is not efficient on memory as we are storing
 tokens more than one time. This conveniently allows us to pick any random
 one without any work. 
 

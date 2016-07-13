@@ -84,7 +84,7 @@ First we start it up:
 ```
 
 Currently, the `markov_server` will crash if we try to `generate/1` something
-before it's seeded. So let's do just that, there's a few API's:
+before it's seeded. So let's do seed it then, there's a few API's:
 
 * `seed` takes a string (the text to seed the generator with)
 * `seed_file` takes a path to a text file

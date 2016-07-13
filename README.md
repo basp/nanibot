@@ -244,7 +244,9 @@ We'll focus on the bigram case. This assumes that *K* is a tuple `{token(), toke
 the length of *S*.
 
 Now we'll end up with a bunch of random tokens in *S* which we basically can just return, 
-join and use as some jibberish. Below is the code in *pseudo* Erlang.
+join and use as some jibberish. 
+
+Below is the code in *pseudo* Erlang corresponding to the steps mentioned above:
 ```
 S = [].                                 % 1
 K = {A, B} = memory:get_random_key().   % 1

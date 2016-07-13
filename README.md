@@ -305,10 +305,17 @@ retrieve(Key :: ngram()) -> Candidates :: [token()].
 * This API will probably be formalized in the next (0.0.2) version.
 * Having `ignored` feels like a bit of a cop out but I kinda like it for stuff
 that is really a **command** and not a **query**. In other words, commands should
-return `void`, `ignored`, `0` whatever. And queries should return something 
-useful. This might sound logical but a lot of people still get it wrong. However
-if you're reading this you probably know a thing or two about functional programming
-so hopefully you know better.
+return `void`, `ignored`, `0` whatever and mutate some kind of state. The point is, 
+their return value is not that interesting. And queries should return something 
+useful. This might sound logical (or illogical depending where you're coming from) 
+but a lot of people still get it wrong. However if you're reading this you probably 
+know a thing or two about functional programming so hopefully you know better.
+
+In any case, this concept is deeply ingrained in the **OTP** framework itself in the
+the form of `handle_call/3` (a query) and `handle_cast/2` (a command).
+
+Check out (Martin Fowler)[http://martinfowler.com/bliki/CQRS.html] for more info 
+on CQRS. 
 
 ## random stuff
 Remember you do func assignment in the shell, I usually have something like:

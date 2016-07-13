@@ -225,8 +225,9 @@ compared to everything else you're running.
 ## generation of (random) tokens
 
 Once you have such a map you're able to generate random stuff that's famous
-for utterly nonsense most of the time even though it seems to make sense... 
-Sometimes.
+for being utterly nonsense most of the time (even though it seems to make 
+sense at a glimpse) and hauntingly insightful and some times (when the stars 
+align).
 
 0. Our initial state is an empty list `[token()]` *S* and the `memory` dictionary
 as described above. Additionaly we picked a key *K* from the known keys in `memory`.  

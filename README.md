@@ -48,7 +48,7 @@ The bot is connecting. Once it's ready you can tell it to join some channel:
 Note that the bot is ready once it received the `RPL_WELCOME` message 
 from the server. At this point you can send it other commands (see below).
 
-Note that when dealing with the bot in an interactive way (as we are doing)
+When dealing with the bot in an interactive way (as we are doing)
 in the Erlang shell, we have to watch for this event. When you register
 middleware (plugins) this will be handled automatically and you can be sure
 it will only run once the bot is really ready.

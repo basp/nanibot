@@ -275,8 +275,8 @@ of a uniform rank (and only bigrams too currently).
 The `{Key :: ngram(), Value :: [token()]` values are basically stored as is. The key is
 the `ngram()` and the value is the candidate list `[token()]`. However, we wanna lookup
 random keys efficiently and **scanning** the table is **not undesirable** so we'll use an 
-additional index table. This is just an `index() :: integer()` and an `ngram()` key:
-`{index :: integer(), ngram()}` where `index()` is our key.  
+additional index table. This is just an `index() :: integer()` key and an `ngram()` value:
+`{index :: integer(), ngram()}`.  
 
 Now we just keep track of the number of keys in our runtime state (we need that anyway 
 to generate new index numbers) and basicallly use that as our upper limit whenever we 

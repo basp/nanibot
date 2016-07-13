@@ -119,8 +119,8 @@ By **default**, the bot *is* [seeding itself](https://github.com/basp/nanibot/bl
 with incoming chat messages.
 
 Or you can increase the bot's vocabulary just by seeding it
-more stuff while it's running using any of the API's and 
-the Erlang shell. 
+more stuff while it's running using any of the API's. Manually
+using the Erlang shell or via any other means. 
 
 A fun thing to do is to seed the bot with a minimal amount of 
 text (basically enough to generate at least one ngram) and have

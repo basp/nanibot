@@ -316,8 +316,7 @@ know a thing or two about functional programming so hopefully you know better.
 In any case, this concept is deeply ingrained in the **OTP** framework itself in the
 the form of `handle_call/3` (a query) and `handle_cast/2` (a command).
 
-Check out (Martin Fowler)[http://martinfowler.com/bliki/CQRS.html] for more info 
-on CQRS. 
+Check out [Martin Fowler](http://martinfowler.com/bliki/CQRS.html) and his wise words. 
 
 ## random stuff
 Remember you do func assignment in the shell, I usually have something like:

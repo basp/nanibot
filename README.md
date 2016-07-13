@@ -169,6 +169,8 @@ of known tokens and store it again.
 In other words, what you're creating is a map from `ngram()` to `[token()]`.
 Let's call this *map* (or dictionary) `memory`.
 
+## generation of (random) tokens
+
 Once you have such a map you're able to generate random stuff that's famous
 for utterly nonsense most of the time even though it seems to make sense... 
 Sometimes.

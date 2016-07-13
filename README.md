@@ -186,4 +186,6 @@ We'll focus on the bigram case. This assumes that *K* is a tuple `{token(), toke
 5. We combine *K* `{A, B}` with *T* so that we have a new tuple *K2* `{B, T}`. 
 6. Repeat from step 1 substituting *K* with our new *K2* until we are satisfied with
 the length of *S*.
-7. Return *S*. 
+
+Now we'll end up with a bunch of random tokens in *S* which we basically can just return, 
+join and use as some jibberish.

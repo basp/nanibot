@@ -129,12 +129,12 @@ After we have seeded the server we are ready to generate some tokens:
 Tokens = markov_server:generate(13).
 ```
 
-A quick hint, we can join this easily using the `string:join` function:
+A quick hint, we can join this easily using the `string:join/2` function:
 ```
 Text = string:join(markov_server:generate(13), " ").
 ```
 
-Just remember, the `generate` function returns tokens.
+Just remember, the `generate/1` function returns tokens.
 
 # todo
 * Finish and incorporate middle-ware (plugin) server

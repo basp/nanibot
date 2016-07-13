@@ -162,7 +162,7 @@ starts by converting tokens into so called *ngrams*. An `ngram`
 is basically a tuple of tokens that appeared in that order in some
 source of tokens.
 
-The goal is to create something that can give us a random sequences
+The goal is to create something that can give us a random sequence
 of tokens of a particular length in which the order of the tokens
 is based on the likeleyhood they where found in some kind of 
 source material (e.g. existing tokens).

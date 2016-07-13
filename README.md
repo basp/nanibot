@@ -248,8 +248,8 @@ T = utils:random_element(Q).            % 2
 S2 = [T | S].                           % 3/4
 K2 = {B, T}.                            % 4/5
 
-% Functionally, we would recurse with K2 and accumulator S.
-% Imperatively we can say that `K <- K2` or `K := K2` (if you're a Pascal afficionado).
+% Functionally, we would recurse with `K2` and accumulator `S2`.
+% Imperatively we can say that `K <- K2` and `S <- S2`.
 ```
 
 ## how it's stored internally

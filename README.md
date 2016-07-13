@@ -116,6 +116,7 @@ Text = string:join(markov_server:generate(13), " ").
 Just remember, the `generate` function returns tokens.
 
 # TODO
+* Finish and incorporate middle-ware (plugin) server
 * Add proper supervisor tree(s)
 * Split off markov_server to seperate app
 * Complete proper OTP application(s)

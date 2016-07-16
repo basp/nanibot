@@ -1,6 +1,17 @@
 # nanibot
 Erlang IRC bot.
 
+    <Aazeen> meth is the worst bot in the world
+    <Methbot> meth loves herself
+    <Aazeen> meth is crazy
+    <Methbot> how in this complete new implementation from scratch she's still totally into talking
+    <Aazeen> meth sometimes behaves like an asshole
+    <Methbot> is terribly limited atm
+    <Aazeen> there we go :)
+    <Methbot> hard for you to deal with meth
+    <Aazeen> what about meth?
+    <Methbot> that meth
+
 ## getting started
 ### the erlang shell
 The instructions below assume you are running an Erlang shell. If you're 

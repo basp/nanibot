@@ -113,7 +113,8 @@ registering(cast, {received, Msg}, Data) ->
         [_, _, <<"PING">>, Ping] ->
             Actions = [{next_event, internal, {ping, Ping}}],
             {keep_state_and_data, Actions};
-        _ -> {keep_state_and_data, []}
+        _ -> 
+            {keep_state_and_data, []}
     end;
 
 registering(internal, {ping, Ping}, Data) ->
@@ -132,7 +133,7 @@ ready(internal, {ping, Ping}, Data) ->
 
 ready(internal, {join, Props}, _Data) ->
     _Channel = proplists:get_value(channel, Props), 
-    _Nick = proplists:get_value(channel, Props),
+    _Nick = proplists:get_value(nick, Props),
     {keep_state_and_data, []};
 
 ready(internal, {part, _Props}, _Data) ->
@@ -141,11 +142,38 @@ ready(internal, {part, _Props}, _Data) ->
 ready(internal, {names, Channel, Names}, Data) ->
     Conn = Data#state.conn,
     Nick = Data#state.nick,
+    send_hello(Conn, Nick, Channel, Names),
     {keep_state_and_data, []};
 
-ready(internal, {privmsg, Props}, _Data) ->
-    Text = proplists:get_value(text, Props),
-    markov_server:seed(binary_to_list(Text)),
+ready(internal, {privmsg, Props}, Data) ->
+    % Todo, channel might be Nick as well, gotta check for that
+    Nick = Data#state.nick,
+    From = proplists:get_value(from, Props),
+    To = proplists:get_value(to, Props),
+    Text = binary_to_list(proplists:get_value(text, Props)),
+
+    % Update brain
+    markov_server:seed(Text),
+
+    Args = #{from => From, to => To, msg => Text},
+    Context = [{nick, Nick}, {args, Args}],
+
+    _Result = sandbox:run(msg, Context),
+
+    %Target = case To of Nick -> From; Channel -> Channel end,
+    %Msg = string:join(markov_server:generate(13), " "),
+    % Randomly respond on aliasas, questions and exlamations
+    %Opts = [{capture, none}, global, caseless],
+    %RandomChance = 0.38,
+    %case re:run(Text, "(meth)|(bot)|([?!]$)", Opts) of
+    %    match -> say(Target, Msg);
+    %    nomatch ->
+    %        case rand:uniform() of
+    %            X when X < RandomChance -> say(Target, Msg);
+    %            _ -> ignored
+    %        end
+    %    end,
+
     {keep_state_and_data, []};
 
 ready(cast, {received, Msg}, _Data) ->
@@ -179,6 +207,9 @@ ready(cast, {send, Msg}, Data) ->
 ready(_EventType, _EventContent, _Data) ->
     {keep_state_and_data, []}.
 
+interacting(_EventType, _EventContent, Data) ->
+    {next_state, ready, Data}.
+
 %%%============================================================================
 %%% Internal functions
 %%%============================================================================
@@ -192,9 +223,10 @@ send_login(Conn, Nick) ->
     send(Conn, ["NICK ", Nick]),
     send(Conn, ["USER ", Nick, " 8 * :", real_name()]).
 
-send_hello(Conn, Nick, Channel, Names) ->
+send_hello(_Conn, Nick, Channel, Names) ->
     Others = lists:filter(fun (X) -> X =/= Nick end, Names),
-    case Others of
-        [Someone] -> "Hiya " ++ Someone ++ "!";
-        _ -> "Hi all!"
-    end.
+    Msg = case Others of
+            [Someone] -> "Hiya " ++ Someone ++ "!";
+            _ -> "Hi all!"
+        end,
+    say(Channel, Msg).

@@ -47,8 +47,8 @@ handle_call({run, Event, Context}, _From, State) ->
     _Args = proplists:get_value(args, Context),
     Q = maps:get(Event, State),
     Reply = 
-        try 
-            run_queue(queue:to_list(Q), Context, [])
+        try run_queue(queue:to_list(Q), Context, []) of
+            Result -> Result
         catch
             Err -> {reply, Err, State}
         end, 
@@ -82,12 +82,12 @@ code_change(_OldVsn, State, _Extra) ->
 %%%============================================================================
 %%% Internal functions
 %%%============================================================================
-run_queue([], Context, Actions) -> 
-    {Context, Actions};
+run_queue([], Context, Acc) -> 
+    {Context, Acc};
 
-run_queue([Handler | Rest], Context, Actions) ->
-    {Flag, NewActions} = Handler(Context),
+run_queue([Handler | Rest], Context, Acc) ->
+    {Flag, Context} = Handler(Context),
     case Flag of
-        continue -> run_queue(Rest, Context, NewActions ++ Actions);
-        _ -> {Context, NewActions ++ Actions}
+        continue -> run_queue(Rest, Context, Acc);
+        _ -> {Context, Acc}
     end. 

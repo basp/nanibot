@@ -108,7 +108,6 @@ registering(cast, {received, Msg}, Data) ->
     {match, Match} = nani_utils:parse(Msg),
     case Match of 
         [_, <<?RPL_WELCOME>>, _, _] ->
-            %% io:format("Ready.~n"),
             {next_state, ready, Data};
         [_, _, <<"PING">>, Ping] ->
             Actions = [{next_event, internal, {ping, Ping}}],
@@ -146,33 +145,20 @@ ready(internal, {names, Channel, Names}, Data) ->
     {keep_state_and_data, []};
 
 ready(internal, {privmsg, Props}, Data) ->
-    % Todo, channel might be Nick as well, gotta check for that
     Nick = Data#state.nick,
     From = proplists:get_value(from, Props),
     To = proplists:get_value(to, Props),
     Text = binary_to_list(proplists:get_value(text, Props)),
 
-    % Update brain
+    % Let's learn some new vocab
     markov_server:seed(Text),
 
+    % Setup the context for any plugins we want to run
     Args = #{from => From, to => To, msg => Text},
-    Context = [{nick, Nick}, {args, Args}],
+    Context = [{nick, Nick}, {args, Args}, {age, foo}],
 
+    % TODO: Something useful with the result
     _Result = sandbox:run(msg, Context),
-
-    %Target = case To of Nick -> From; Channel -> Channel end,
-    %Msg = string:join(markov_server:generate(13), " "),
-    % Randomly respond on aliasas, questions and exlamations
-    %Opts = [{capture, none}, global, caseless],
-    %RandomChance = 0.38,
-    %case re:run(Text, "(meth)|(bot)|([?!]$)", Opts) of
-    %    match -> say(Target, Msg);
-    %    nomatch ->
-    %        case rand:uniform() of
-    %            X when X < RandomChance -> say(Target, Msg);
-    %            _ -> ignored
-    %        end
-    %    end,
 
     {keep_state_and_data, []};
 
@@ -206,9 +192,6 @@ ready(cast, {send, Msg}, Data) ->
 
 ready(_EventType, _EventContent, _Data) ->
     {keep_state_and_data, []}.
-
-interacting(_EventType, _EventContent, Data) ->
-    {next_state, ready, Data}.
 
 %%%============================================================================
 %%% Internal functions

@@ -7,7 +7,12 @@
          terminate/2, code_change/3]).
 
 %% API
--export([start/0, start_link/0, stop/0, lookup/1, seed/1, seed_file/1, seed_dir/1, generate/1]).
+-export([start/0, start_link/0, 
+         stop/0, 
+         lookup/1, 
+         seed/1, seed_file/1, seed_dir/1, 
+         generate/1,
+         info/0]).
 
 -define(OBJECTS_TABLE, ngrams_objects).
 -define(INDEX_TABLE, ngrams_index).
@@ -27,6 +32,9 @@ start_link() ->
 
 stop() ->
     gen_server:stop(?SERVER).
+
+info() ->
+    gen_server:call(?SERVER, info).
 
 lookup(Key) ->
     gen_server:call(?SERVER, {lookup, Key}).
@@ -53,6 +61,12 @@ init([]) ->
     Objects = ets:new(?OBJECTS_TABLE, []),
     State = #state{index = Index, objects = Objects, count = 0},
     {ok, State}.
+
+handle_call(info, _From, State) ->
+    Index = ets:info(State#state.index), 
+    Objects = ets:info(State#state.objects),
+    Reply = [{index, Index}, {objects, Objects}],
+    {reply, Reply, State};
 
 handle_call({lookup, Key}, _From, State) ->
     Objects = State#state.objects,
@@ -86,7 +100,6 @@ code_change(_OldVsn, State, _Extra) ->
 %%%============================================================================
 %%% Internal functions
 %%%============================================================================
-
 
 %%%----------------------------------------------------------------------------
 seed_dir(_Dir, []) -> ok;

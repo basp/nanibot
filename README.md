@@ -151,6 +151,25 @@ Just remember, the `generate/1` function returns tokens.
 * Complete proper OTP application(s)
 * Split off markov_server to seperate app (maybe)
 
+# plugins
+There's a seperate `sandbox` process that is responsible for running
+any middleware. This is better than hacking it onto the bot itself.
+
+The idea is that only the middleware server will crash (at worst) if
+something goes wrong and not the whole bot.
+```
+> sandbox:start(), Respond = fun respond:handler/1, sandbox:msg(Respond).
+``` 
+
+This will register a random answering handler from the `respond` module.
+There's also a `commands` module that has a basic `info` command:
+```
+> Info = fun commands:info/1, sandbox:msg(Info).
+```
+
+This will output some information on the vocab memory whenever someone 
+types `!info`.
+
 # notes on the random text generation
 This is just for those who are interested or wanna make sense
 of the stuff in `markov.erl` (this includes me in a few months).

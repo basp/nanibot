@@ -10,6 +10,7 @@
 -export([start/0, start_link/0, 
          stop/0, 
          lookup/1, 
+         checkpoint/0,
          seed/1, seed_file/1, seed_dir/1, 
          generate/1,
          info/0]).
@@ -39,6 +40,9 @@ info() ->
 lookup(Key) ->
     gen_server:call(?SERVER, {lookup, Key}).
 
+checkpoint() ->
+    gen_server:cast(?SERVER, checkpoint).
+
 seed(Text) ->
     gen_server:cast(?SERVER, {seed, Text}).
 
@@ -47,7 +51,7 @@ seed_file(Path) ->
 
 seed_dir(Dir) ->
     {ok, Files} = file:list_dir(Dir),
-    seed_dir(Dir, Files).
+    seed_dir(Dir, Files).   
 
 %% Assumes we are seeded
 generate(Count) ->
@@ -77,6 +81,13 @@ handle_call({generate, Count}, _From, State) ->
     NextKey = random_key(State),
     Reply = generate(Count, NextKey, State, []),
     {reply, Reply, State}.
+
+handle_cast(checkpoint, State) ->
+    Index = State#state.index,
+    Objects = State#state.objects,
+    ok = ets:tab2file(Index, "./index.tab"),
+    ok = ets:tab2file(Objects, "./objects.tab"),
+    {noreply, State};
 
 handle_cast({seed_file, Path}, State) ->
     {ok, Contents} = file:read_file(Path),

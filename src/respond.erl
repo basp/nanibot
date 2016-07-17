@@ -2,7 +2,7 @@
 
 -export([handler/1]).
 
--define(CHANCE, 0.7).
+-define(CHANCE, 0.28).
 
 handler(Context) ->
     Nick = proplists:get_value(nick, Context),

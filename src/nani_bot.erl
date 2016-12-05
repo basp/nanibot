@@ -146,6 +146,7 @@ ready(internal, {names, Channel, Names}, Data) ->
     {keep_state_and_data, []};
 
 ready(internal, {privmsg, Props}, Data) ->
+    Conn = Data#state.conn,
     Nick = Data#state.nick,
     From = proplists:get_value(from, Props),
     To = proplists:get_value(to, Props),
@@ -155,12 +156,20 @@ ready(internal, {privmsg, Props}, Data) ->
     markov_server:seed(Text),
 
     % Setup the context for any plugins we want to run
+    % and run the middleware pipeline.
+    %
+    % TODO: We are crashing on this right now.
+    % NOTE:
+    % `Context` is the thing that we are gonna pass along
+    % the middleware. Not sure what we are planning to
+    % do with `Args`.
     Args = #{from => From, to => To, msg => Text},
     Context = [{nick, Nick}, {args, Args}, {age, foo}],
-
-    % TODO: We are crashing on this now...
-    % FIND OUT WHY 
     % _Result = sandbox:run(msg, Context),
+
+    Tokens = markov_server:generate(13),
+    Msg = string:join(Tokens, " "),
+    send(Conn, Msg),
 
     {keep_state_and_data, []};
 

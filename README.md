@@ -109,7 +109,7 @@ before it's seeded. So let's do seed it then, there's a few API's:
 > markov_server:seed_file("./chatlog.txt").
 ```
 
-Seeding is additive. For example, you can grow the 
+Seeding is **additive**. For example, you can grow the 
 bot's markov potential in real-time by using the chat messages 
 you receive and the `seed` function. You could opt to filter
 out anything the bot's own messages or even decide to inlude
@@ -141,6 +141,12 @@ Tokens = markov_server:generate(13).
 A quick hint, we can join this easily using the `string:join/2` function:
 ```
 Text = string:join(markov_server:generate(13), " ").
+```
+
+And another tip, in you can easily define a random response function as 
+well, just make sure the `markov_server` is running and seeded (see below).
+```
+Response = fun(Len) -> string:join(markov_server:generate(Len), " ") end.
 ```
 
 Just remember, the `generate/1` function returns tokens.

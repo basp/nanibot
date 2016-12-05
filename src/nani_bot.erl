@@ -146,7 +146,6 @@ ready(internal, {names, Channel, Names}, Data) ->
     {keep_state_and_data, []};
 
 ready(internal, {privmsg, Props}, Data) ->
-    Conn = Data#state.conn,
     Nick = Data#state.nick,
     From = proplists:get_value(from, Props),
     To = proplists:get_value(to, Props),
@@ -167,9 +166,10 @@ ready(internal, {privmsg, Props}, Data) ->
     Context = [{nick, Nick}, {args, Args}, {age, foo}],
     % _Result = sandbox:run(msg, Context),
 
+    % Respond EVERY time (for now).
     Tokens = markov_server:generate(13),
     Msg = string:join(Tokens, " "),
-    send(Conn, Msg),
+    say(To, Msg),
 
     {keep_state_and_data, []};
 

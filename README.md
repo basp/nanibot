@@ -251,7 +251,7 @@ compared to everything else you're running.
 
 Once you have such a map you're able to generate random stuff that's famous
 for being utterly nonsense most of the time (even though it seems to make 
-sense at a glimpse) and hauntingly insightful and some times (when the stars 
+sense at a glimpse) and hauntingly insightful and other times (when the stars 
 align).
 
 0. Our initial state is an empty list `[token()]` *S* and the `memory` dictionary

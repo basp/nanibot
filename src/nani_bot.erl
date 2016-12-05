@@ -9,7 +9,7 @@
 -export([standby/3, connecting/3, registering/3, ready/3]).
 
 %% gen_statem callbacks
--export([init/1, handle_event/4, terminate/3, code_change/4]).
+-export([init/1, callback_mode/0, handle_event/4, terminate/3, code_change/4]).
 
 -define(RPL_WELCOME,        "001").
 -define(RPL_YOURHOST,       "002").
@@ -24,7 +24,6 @@
 
 -record(state, {nick, host, port, conn}).
 
-callback_mode() -> state_functions.
 name() -> nani_bot.
 real_name() -> ?REAL_NAME.
 
@@ -68,15 +67,17 @@ init(Config) ->
     Host = proplists:get_value(host, Config),
     Port = proplists:get_value(port, Config),
     Data = #state{nick = Nick, host = Host, port = Port},
-    {callback_mode(), standby, Data}.
+    {ok, standby, Data}.
 
 terminate(_Reason, _State, _Data) -> ok.
 
 code_change(_OldVsn, State, Data, _Extra) ->
-    {callback_mode(), State, Data}.
+    {ok, State, Data}.
 
 handle_event(_EventType, _EventContent, _State, _Data) ->
     {keep_state_and_data, []}.
+
+callback_mode() -> state_functions.
 
 %%%============================================================================
 %%% State functions
@@ -157,8 +158,9 @@ ready(internal, {privmsg, Props}, Data) ->
     Args = #{from => From, to => To, msg => Text},
     Context = [{nick, Nick}, {args, Args}, {age, foo}],
 
-    % TODO: Something useful with the result
-    _Result = sandbox:run(msg, Context),
+    % TODO: We are crashing on this now...
+    % FIND OUT WHY 
+    % _Result = sandbox:run(msg, Context),
 
     {keep_state_and_data, []};
 

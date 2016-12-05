@@ -42,3 +42,21 @@ example:
 Nani will make use of the `markov_server` if it's available. This means you
 can start to ramble and she'll gradually get better at making sense and
 responding appropriately. Of course, mostly she'll be rambling though.
+
+The best thing is: you can try out the `markov_server` without activating the
+bot.
+
+    > cd("directory/to/nani/src").
+    > c(markov_server).
+    > markov_server:start().
+    > markov_server:seed("Hell yeah!").
+    > markov_server:generate(5). % or any number of words you desire
+
+The goal is to be able to play around with your response generators before
+you hook them into the bot or even after that.
+
+# Bootstrapping
+TODO: Describe boostrapping all the bot components
+
+# Interacting
+TODO: Describe interacting with the `nani_bot` API.

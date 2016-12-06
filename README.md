@@ -20,10 +20,10 @@ Erlang IRC bot.
 > so far I'm pleased on how things are falling together.
 
 ## overview
-Nanibot is not really a framework but it does claim to be a bot by virtue
+Nanibot is library but it also claims to be a bot, by virtue
 of all the little pieces that are included. By design, the aim has always
-been to be more of a library of useful bits and less of a framework that 
-you have to conform to.
+been to be a library and definitely not a framework. As such it can
+hopefully be useful in a variety of scenarios.
 
 ### nani
 The `nani` modules are part of the core bot. When considering only those

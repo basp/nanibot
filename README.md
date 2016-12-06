@@ -25,6 +25,8 @@ of all the little pieces that are included. By design, the aim has always
 been to be more of a library of useful bits and less of a framework that 
 you have to conform to.
 
+TODO: Give an overview of the bot, the markov server and the plugin system.
+
 ## getting started
 ### the erlang shell
 The instructions below assume you are running an Erlang shell. If you're 

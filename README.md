@@ -176,7 +176,7 @@ There's also a `commands` module that has a basic `info` command:
 This will output some information on the vocab memory whenever someone 
 types `!info`.
 
-# events
+# plugins
 > Nanibot was created with the explicit goal of modifying and growing the
 > bot *while* it is running. I was happy working in Node land and enjoying
 > the `npm` ecosystem but it was frustrating seeing the bot err and Having
@@ -210,6 +210,17 @@ executing (the equivalent of calling `done()` in callback land).
 NOTE: Also I have no clue in what order event handlers are executed. I
 can only assume (and hope) that it's something logical like the order 
 in which they are registered. 
+
+To start, take a look at either the `greeter` or `markov_respond` module.
+Both of them are implemented as a handler for the `nani_event` process.
+Everything is boilerplate mostly except for the `handle_event/2` function.
+
+You can see that from inside the handler, you can easily interact with the
+bot using the `nani_bot` registered process. As mentioned before you can
+easily use the `say/2` and `emote/2` functions for basic responses and for
+more advanced (low level) stuff you can use `send/1` as well. Oh and there's
+a `join/1` method to join channels (a `part/1` method is planned as well
+because it just makes sense in the context of having a `join` method). 
 
 # notes on the random text generation
 This is just for those who are interested or wanna make sense

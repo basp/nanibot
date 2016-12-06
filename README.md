@@ -68,14 +68,14 @@ change to implement in `markov_server` if you really need them (you don't).
 
 > Nowadays the bot doesn't even care about the `markov_server` anymore 
 > but at some point it really *depended* on it and would crash without
-> it being available. That explain why currently it still is the only
+> it being available. That explains why currently it still is the only
 > service with an actual proper supervisor (`markov_sup`) process.
 
 The `markov` module is just a bunch of methods that combine nicely in order
 to do procedural generation of tokens based on *ngrams*. It should be quite 
 useful on it's own outside the `markov_server` process which uses it to 
-generate responses. Note that the `markov` module doesn't care about storage.
-All persistence is handled by the `markov_server` and its internal ETS tables.
+generate responses. Note that the `markov` module is a pure functional
+module. All persistence is handled by the `markov_server` and its internal ETS tables.
 
 ## getting started
 ### the erlang shell
@@ -97,9 +97,9 @@ After that we compile the bot modules:
 > lc([nani_utils, nani_conn, nani_event, nani_bot]).
 ```
 
-This will allow you to run the bot with `nani_bot:start(Config)` but 
-you probably want a bit more bits and pieces like for example the 
-markov service:
+This will allow you to run the bot with `nani_bot:start(Config)` (no 
+worries, `Config` is explained later) but you probably want a bit 
+more bits and pieces like for example the markov service:
 ```
 > lc([markov, markov_server]).
 ```

@@ -207,9 +207,24 @@ that something might crash the whole thing. The downside is that now we
 don't have a built-in way to have any handler stop other handlers from
 executing (the equivalent of calling `done()` in callback land).
 
-NOTE: Also I have no clue in what order event handlers are executed. I
-can only assume (and hope) that it's something logical like the order 
-in which they are registered. 
+> I darenot say in what order event handlers are executed. I
+> can only assume (and hope) that it's something logical like the order 
+> in which they are registered. However, it's not something that you
+> should depend upon anyway even if you are 100% sure about the order.
+>
+> If you need dependent event handlers (which is a valid use case) then
+> you're encouraged to implement them in the way that makes most sense 
+> to you in the spirit of Erlang/OTP.
+>
+> If you think of it from another way: what if a single handler could 
+> block any other event handler from executing? Even if it was unrelated, 
+> like a logging or debug handler? That would be a very bad thing. Hence, 
+> Nanibot always sends all events to all registered handler modules and 
+> pushes responsibility for any *bubbling* effects back to the client 
+> (implementers of the handlers).
+
+Note that it's usually a good idea to implement a catch-all clause in
+for your `handle_event/2` implementation.  
 
 To start, take a look at either the `greeter` or `markov_respond` module.
 Both of them are implemented as a handler for the `nani_event` process.

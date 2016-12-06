@@ -56,7 +56,7 @@ tables as the default storage mechanism and as such is quite fast but your
 bot might suffer from *amnesia*.
 
 Note that it would be trivial to use disk based tables but there is really
-need. The bot is pretty idempotent (and functional) in that when you seed
+no need. The bot is pretty idempotent (and functional) in that when you seed
 it with exactly the same data, you get exactly the same behavior (barring
 any funky handlers you have registered of course but even they should not
 be terribly hampared by a total failure of bot memory if you design them 

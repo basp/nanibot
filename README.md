@@ -26,9 +26,12 @@ been to be a library and definitely not a framework. As such it can
 hopefully be useful in a variety of scenarios.
 
 > Nanibot is *wannabe* OTP. It uses a lot of OTP stuff but the top level 
-> is still unsupervised. The main reason for this is that it was unclear on
-> how the plugins (real functionality) would be implemented. Now that 
-> `gen_event` came out on top we should have a pretty stable surface layer.
+> is still unsupervised (except from the `markov_server` but more on that 
+> later). 
+>
+> The main reason for this is that it was unclear on how the plugins (real 
+> functionality) would be implemented. Now that `gen_event` came out on top 
+> we should have a pretty stable surface layer.
 > 
 > We will be full OTP at some point though, that has always been the goal.
 

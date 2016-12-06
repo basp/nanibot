@@ -25,7 +25,47 @@ of all the little pieces that are included. By design, the aim has always
 been to be more of a library of useful bits and less of a framework that 
 you have to conform to.
 
-TODO: Give an overview of the bot, the markov server and the plugin system.
+### nani
+The `nani` modules are part of the core bot. When considering only those
+modules even *bot* is an overstatement. Frankly it's a pretty basic Erlang
+IRC client. The core of the bot is implemented in `nani_bot` as a `gen_statem`
+behavior. Its basic job is to listen to the IRC socket and emit events
+via the `nani_event` event emitter. Clients in the form of event handlers
+and other processes using the bot can use the `nani_bot` interface to
+interact with the IRC connection. 
+
+TODO: The `nani_utils` module contains some helper functions which 
+might not even be used anymore.
+
+### markov
+The `markov` modules are part of the markov-chain generation service.
+This is a server that can generate random text and also *learn* on the fly.
+You can dynamically *seed* it using any of the `seed` methods and it will
+incorporate that text into its vocabulary. It uses ETS memory backed
+tables as the default storage mechanism and as such is quite fast but your
+bot might suffer from *amnesia*.
+
+Note that it would be trivial to use disk based tables but there is really
+need. The bot is pretty idempotent (and functional) in that when you seed
+it with exactly the same data, you get exactly the same behavior (barring
+any funky handlers you have registered of course but even they should not
+be terribly hampared by a total failure of bot memory if you design them 
+well). In other words - if you log the IRC data you can always bring the 
+bot back to where it was (again, barring any funky stuff).
+
+And else, you can just use ETS disk-based tables which is a trivial
+change to implement in `markov_server` if you really need them (you don't).
+
+> Nowadays the bot doesn't even care about the `markov_server` anymore 
+> but at some point it really *depended* on it and would crash without
+> it being available. That explain why currently it still is the only
+> service with an actual proper supervisor (`markov_sup`) process.
+
+The `markov` module is just a bunch of methods that combine nicely in order
+to do procedural generation of tokens based on *ngrams*. It should be quite 
+useful on it's own outside the `markov_server` process which uses it to 
+generate responses. Note that the `markov` module doesn't care about storage.
+All persistence is handled by the `markov_server` and its internal ETS tables.
 
 ## getting started
 ### the erlang shell

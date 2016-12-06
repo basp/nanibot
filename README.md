@@ -231,6 +231,17 @@ To start, take a look at either the `greeter` or `markov_respond` module.
 Both of them are implemented as a handler for the `nani_event` process.
 Everything is boilerplate mostly except for the `handle_event/2` function.
 
+The `greeter` module is quite simply, it responds to the `names` event and
+emits a basic greeting that is customized when there's only a single other
+person in the channel. The `markov_respond` module uses the registered
+`markov_server` service that can be used to generate responses. The markov
+generator service is described in a seperate section.
+
+> Note that even though `markov_server` and `nani_bot` do work well together,
+> they are totally obvious about eachother and should remain so. The only way
+> they should be related is via an `gen_event` module registed as a handler
+> to the `nani_event` process.
+
 You can see that from inside the handler, you can easily interact with the
 bot using the `nani_bot` registered process. As mentioned before you can
 easily use the `say/2` and `emote/2` functions for basic responses and for

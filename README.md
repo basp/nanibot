@@ -187,7 +187,7 @@ types `!info`.
 > path to take. I felt like Erlang might be a good fit but after looking 
 > into the ecosystem I felt a bit dishearted. To be honest, none of it was 
 > to my liking so that meant I had to write the whole thing from scratch
-> including a basic IRC client.
+> including a basic IRC client and markov library.
 >
 > Still, the thought of having hot-load capability and the other benefits
 > (first class processes, function programming, dynamic typing, OTP) 

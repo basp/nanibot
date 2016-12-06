@@ -150,28 +150,8 @@ ready(internal, {privmsg, Props}, Data) ->
     From = proplists:get_value(from, Props),
     To = proplists:get_value(to, Props),
     Text = binary_to_list(proplists:get_value(text, Props)),
-
-    % Let's learn some new vocab
-    markov_server:seed(Text),
-
-    % Setup the context for any plugins we want to run
-    % and run the middleware pipeline.
-    %
-    % TODO: We are crashing on this right now.
-    % NOTE:
-    % `Context` is the thing that we are gonna pass along
-    % the middleware. Not sure what we are planning to
-    % do with `Args`.
-    Args = #{from => From, to => To, msg => Text},
-    Context = [{nick, Nick}, {args, Args}, {age, foo}],
-    % _Result = sandbox:run(msg, Context),
-
-    % Respond EVERY time (for now).
-    Tokens = markov_server:generate(13),
-    Msg = string:join(Tokens, " "),
-    say(To, Msg),
-
-    {keep_state_and_data, []};
+    nani_event:privmsg(Nick, From, To, Text),
+    {keep_state_and_data, []}.
 
 ready(cast, {received, Msg}, _Data) ->
     {match, Match} = nani_utils:parse(Msg),

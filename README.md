@@ -190,7 +190,7 @@ types `!info`.
 > including a basic IRC client and markov library.
 >
 > Still, the thought of having hot-load capability and the other benefits
-> (first class processes, function programming, dynamic typing, OTP) 
+> (first class processes, functional programming, dynamic typing, OTP) 
 > really convinced me to give it a try anyway. The result is Nanibot and
 > so far I'm pleased on how things are falling together.
 

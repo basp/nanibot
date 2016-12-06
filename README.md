@@ -1,8 +1,11 @@
 # nanibot
+Erlang IRC bot.
+
+## author's rambling
 > Nanibot was created with the explicit goal of modifying and growing the
-> bot *while* it is running. I was happy working in Node land and enjoying
-> the `npm` ecosystem but it was frustrating seeing the bot err and Having
-> to take it offline to do basic fixes.
+> bot *while* it is running. I was happy working in Node-land and enjoying
+> the `npm` ecosystem but it was frustrating seeing the bot err (or just make
+> silly responses) and having to take it offline to do basic fixes.
 >
 > I looked into implementing a script language for it or even hot-loading
 > for Node and although both are possible they didn't feel like the right 
@@ -15,8 +18,6 @@
 > (first class processes, functional programming, dynamic typing, OTP) 
 > really convinced me to give it a try anyway. The result is Nanibot and
 > so far I'm pleased on how things are falling together.
-
-Erlang IRC bot.
 
 ## getting started
 ### the erlang shell

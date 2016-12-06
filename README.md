@@ -157,7 +157,7 @@ Just remember, the `generate/1` function returns tokens.
 * Complete proper OTP application(s)
 * Split off markov_server to seperate app (maybe)
 
-# plugins
+# sandbox (x, deprecated)
 There's a seperate `sandbox` process that is responsible for running
 any middleware. This is better than hacking it onto the bot itself.
 
@@ -175,6 +175,41 @@ There's also a `commands` module that has a basic `info` command:
 
 This will output some information on the vocab memory whenever someone 
 types `!info`.
+
+# events
+> Nanibot was created with the explicit goal of modifying and growing the
+> bot *while* it is running. I was happy working in Node land and enjoying
+> the `npm` ecosystem but it was frustrating seeing the bot err and Having
+> to take it offline to do basic fixes.
+>
+> I looked into implementing a script language for it or even hot-loading
+> for Node and although both are possible they didn't feel like the right 
+> path to take. I felt like Erlang might be a good fit but after looking 
+> into the ecosystem I felt a bit dishearted. To be honest, none of it was 
+> to my liking so that meant I had to write the whole thing from scratch
+> including a basic IRC client.
+>
+> Still, the thought of having hot-load capability and the other benefits
+> (first class processes, function programming, dynamic typing, OTP) 
+> really convinced me to give it a try anyway. The result is Nanibot and
+> so far I'm pleased on how things are falling together.
+
+At first the idea of having a middleware pipeline seemed like a nice fit.
+After all, it's what the Node bots use so why not here? Turns out it's 
+not a very nice fit for Erlang after all. You can do it, it's not even
+that hard and it works well enough but it just feels a bit clunky in the 
+context of OTP. So `gen_event` seems like the most obvious choice for now.
+
+If you wanna do something interesting with the bot you can subscribe
+a module to the `nani_event` event emitter process. The major benefit is
+that it is now incredibly easy to add stuff to the bot without worrying
+that something might crash the whole thing. The downside is that now we
+don't have a built-in way to have any handler stop other handlers from
+executing (the equivalent of calling `done()` in callback land).
+
+NOTE: Also I have no clue in what order event handlers are executed. I
+can only assume (and hope) that it's something logical like the order 
+in which they are registered. 
 
 # notes on the random text generation
 This is just for those who are interested or wanna make sense

@@ -1,76 +1,43 @@
 -module(greeter).
 
--behaviour(gen_server).
+-behavior(gen_event).
 
-%% API
--export([start/0, start/1, 
-         start_link/0, start_link/1, 
-         stop/0, add/1, get/0]).
-
-%% gen_server callbacks
--export([init/1, handle_call/3, handle_cast/2, handle_info/2, 
+-export([init/1, handle_event/2, handle_call/2, handle_info/2, 
          terminate/2, code_change/3]).
 
--define(SERVER, ?MODULE).
+-export([add_handler/0, delete_handler/0]).
 
--define(DEFAULT_GREETINGS, [
-    "hey",
-    "hello",
-    "hi",
-    "howdy",
-    "bonjour",
-    "good day",
-    "aloha",
-    "yo",
-    "namaste",
-    "howdy-do",
-    "cheerio",
-    "g'day",
-    "good day",
-    "sup",
-    "salute"
-]).
+init([]) ->
+    {ok, []}.
 
-%%%============================================================================
-%%% API
-%%%============================================================================
-start() -> start(?DEFAULT_GREETINGS).
+handle_event({names, Nick, Channel, Names}, State) ->
+    io:format("~p~n", [{Nick, Channel, Names}]),
+    Others = lists:filter(fun (X) -> X =/= Nick end, Names),
+    Msg = case Others of
+            [Someone] -> "Hiya " ++ Someone ++ "!";
+            _ -> "Hi all!"
+        end,
+    nani_bot:say(Channel, Msg),
+    {ok, State};
 
-start(Greetings) -> 
-    gen_server:start({local, ?SERVER}, ?MODULE, Greetings, []).
-
-start_link() -> start_link(?DEFAULT_GREETINGS).
-
-start_link(Greetings) ->
-    gen_server:start_link({local, ?SERVER}, ?MODULE, Greetings, []).
-
-stop() ->
-    gen_server:stop(?SERVER).
-
-add(Greeting) -> 
-    gen_server:cast(?SERVER, {add, Greeting}).
-
-get() -> 
-    gen_server:call(?SERVER, get).
-
-%%%============================================================================
-%%% gen_server callbacks
-%%%============================================================================
-init(State) ->
+handle_event(_Event, State) ->
     {ok, State}.
 
-handle_call(get, _From, State) ->
-    Index = rand:uniform(length(State)),
-    Reply = lists:nth(Index, State),
-    {reply, Reply, State}.
-
-handle_cast({add, Greeting}, State) ->
-    {noreply, [Greeting | State]}.
+handle_call(_Request, State) ->
+    Reply = ok,
+    {ok, Reply, State}.
 
 handle_info(_Info, State) ->
-    {noreply, State}.
+    {ok, State}.
 
-terminate(_Reason, _State) -> ok.
+terminate(_Reason, _State) ->
+    ok.
 
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
+
+add_handler() ->
+    nani_event:add_handler(?MODULE, []).
+
+delete_handler() ->
+    nani_event:delete_handler(?MODULE, []).

@@ -10,10 +10,11 @@
 init([]) ->
     {ok, []}.
 
-handle_event({privmsg, Nick, From, To, Text}, State) ->
+handle_event({privmsg, Nick, _From, To, Text}, State) ->
     % Let's learn some new vocab
     markov_server:seed(Text),
-    
+
+    % TODO: Check for messages to the bot itself (To =:= Nick).
     % Respond when we encounter some text with our own nick
     case re:run(Text, Nick, [global, caseless]) of
         {match, _} -> 
@@ -23,7 +24,10 @@ handle_event({privmsg, Nick, From, To, Text}, State) ->
             {ok, State};
         _ -> 
             {ok, State}
-    end.
+    end;
+
+handle_event(_Event, State) ->
+    {ok, State}.
 
 handle_call(_Request, State) ->
     Reply = ok,

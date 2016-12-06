@@ -140,9 +140,9 @@ ready(internal, {part, _Props}, _Data) ->
     {keep_state_and_data, []};
 
 ready(internal, {names, Channel, Names}, Data) ->
-    Conn = Data#state.conn,
     Nick = Data#state.nick,
-    send_hello(Conn, Nick, Channel, Names),
+    % send_hello(Conn, Nick, Channel, Names),
+    nani_event:names(Nick, Channel, Names),
     {keep_state_and_data, []};
 
 ready(internal, {privmsg, Props}, Data) ->
@@ -151,7 +151,7 @@ ready(internal, {privmsg, Props}, Data) ->
     To = proplists:get_value(to, Props),
     Text = binary_to_list(proplists:get_value(text, Props)),
     nani_event:privmsg(Nick, From, To, Text),
-    {keep_state_and_data, []}.
+    {keep_state_and_data, []};
 
 ready(cast, {received, Msg}, _Data) ->
     {match, Match} = nani_utils:parse(Msg),
@@ -196,11 +196,3 @@ send_pong(Conn, Ping) ->
 send_login(Conn, Nick) ->
     send(Conn, ["NICK ", Nick]),
     send(Conn, ["USER ", Nick, " 8 * :", real_name()]).
-
-send_hello(_Conn, Nick, Channel, Names) ->
-    Others = lists:filter(fun (X) -> X =/= Nick end, Names),
-    Msg = case Others of
-            [Someone] -> "Hiya " ++ Someone ++ "!";
-            _ -> "Hi all!"
-        end,
-    say(Channel, Msg).

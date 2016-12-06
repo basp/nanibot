@@ -1,8 +1,13 @@
 -module(nani_event).
 
--export([start_link/0, add_handler/2, delete_handler/2, privmsg/4]).
+-export([start/0, start_link/0, add_handler/2, delete_handler/2]).
+
+-export([privmsg/4, names/3]).
 
 -define(SERVER, ?MODULE).
+
+start() ->
+    gen_event:start({local, ?SERVER}).
 
 start_link() ->
     gen_event:start_link({local, ?SERVER}).

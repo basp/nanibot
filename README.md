@@ -19,6 +19,12 @@ Erlang IRC bot.
 > really convinced me to give it a try anyway. The result is Nanibot and
 > so far I'm pleased on how things are falling together.
 
+## overview
+Nanibot is not really a framework but it does claim to be a bot by virtue
+of all the little pieces that are included. By design, the aim has always
+been to be more of a library of useful bits and less of a framework that 
+you have to conform to.
+
 ## getting started
 ### the erlang shell
 The instructions below assume you are running an Erlang shell. If you're 
@@ -417,7 +423,15 @@ remember(Key :: ngram(), Candidate :: token()) -> ignored.
 retrieve(Key :: ngram()) -> Candidates :: [token()]. 
 ```
 
-#### notes
+## random notes
+Anything below should be taken with a grain of salt. In fact you should always be
+critical of anything you read but after re-reading the stuff below some of it 
+doesn't make sense anymore and some of it might be hopeful thinking. And most of 
+it just seems to be general rambling which doesn't even make sense to me anymore.
+
+I'm keeping it for mostly amusement value and in the vain hope that there might be 
+some useful insight in there after all.
+
 * This API will probably be formalized in the next (0.0.2) version.
 * Having `ignored` feels like a bit of a cop out but I kinda like it for stuff
 that is really a **command** and not a **query**. In other words, commands should
@@ -432,7 +446,6 @@ the form of `handle_call/3` (a query) and `handle_cast/2` (a command).
 
 Check out [Martin Fowler](http://martinfowler.com/bliki/CQRS.html) and his wise words. 
 
-## random stuff
 Remember you do func assignment in the shell, I usually have something like:
 ```
 > R = fun (Count) -> 

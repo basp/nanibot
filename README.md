@@ -34,17 +34,32 @@ Once in your Erlang shell:
 > cd("./dir/where/nani/is/installed/src").
 ```
 
-After that we compile all modulels:
+After that we compile the bot modules:
 ```
-> lc([markov, markov_server, nani_utils, nani_conn, nani_bot]).
+> lc([nani_utils, nani_conn, nani_event, nani_bot]).
 ```
 
-#### note
-There might be a missing (required) module in the list above. Usually, while I'm working
-on the bot or related I just have it running and pickup the changes as I go. This usually
-does result in the bot crashing whenever I can't be bothered to update the `code_change` 
-callback but that's not so frequently and most of the development is in middleware nowadays
-which should not have an impact on the bot server process anyways.
+This will allow you to run the bot with `nani_bot:start(Config)` but 
+you probably want a bit more bits and pieces like for example the 
+markov service:
+```
+> lc([markov, markov_server]).
+```
+
+You can start this one with `markov_server:start()` but don't forget 
+to seed it as well. There's various ways to do this. Those are described
+below or you can just check module info with `m(markov_server)` as the 
+`seed` methods are very straightforward.
+
+Finally, you might want the *plugins* which are just `gen_event` handlers:
+```
+> lc([greeter, markov_respond]).
+```
+
+All stuff is explained in more detail below but hopefully at least now
+you can make a little bit of sense of the included modules, their importance
+and where they fit into the big picture. Next, we'll look into actually
+running the bot.
 
 ### starting
 We need some `Config` such as:

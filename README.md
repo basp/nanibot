@@ -25,6 +25,13 @@ of all the little pieces that are included. By design, the aim has always
 been to be a library and definitely not a framework. As such it can
 hopefully be useful in a variety of scenarios.
 
+> Nanibot is *wannabe* OTP. It uses a lot of OTP stuff but the top level 
+> is still unsupervised. The main reason for this is that it was unclear on
+> how the plugins (real functionality) would be implemented. Now that 
+> `gen_event` came out on top we should have a pretty stable surface layer.
+> 
+> We will be full OTP at some point though, that has always been the goal.
+
 ### nani
 The `nani` modules are part of the core bot. When considering only those
 modules even *bot* is an overstatement. Frankly it's a pretty basic Erlang

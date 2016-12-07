@@ -1,7 +1,7 @@
 # nanibot
 Erlang IRC bot.
 
-## rambling
+## goal
 > Nanibot was created with the explicit goal of modifying and growing the
 > bot *while* it is running. I was happy working in Node-land and enjoying
 > the `npm` ecosystem but it was frustrating seeing the bot err (or just make

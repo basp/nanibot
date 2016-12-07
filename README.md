@@ -302,7 +302,7 @@ person in the channel. The `markov_respond` module uses the registered
 generator service is described in a seperate section.
 
 > Note that even though `markov_server` and `nani_bot` do work well together,
-> they are totally obvious about eachother and should remain so. The only way
+> they are totally oblivious about eachother and should remain so. The only way
 > they should be related is via an `gen_event` module registed as a handler
 > to the `nani_event` process.
 

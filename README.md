@@ -47,6 +47,11 @@ interact with the IRC connection.
 TODO: The `nani_utils` module contains some helper functions which 
 might not even be used anymore.
 
+> The bot process should never ever crash. Nor should the *memory* or
+> `markov_server`. At this point the only way to implement actual 
+> functionality should be by listening to events emitted by `nani_event`.
+> Those handlers should never ever crash or kill the bot unintendedly.
+
 ### markov
 The `markov` modules are part of the markov-chain generation service.
 This is a server that can generate random text and also *learn* on the fly.
@@ -147,10 +152,10 @@ The bot is connecting. Once it's ready you can tell it to join some channel:
 Note that the bot is ready once it received the `RPL_WELCOME` message 
 from the server. At this point you can send it other commands (see below).
 
-When dealing with the bot in an interactive way (as we are doing)
-in the Erlang shell, we have to watch for this event. When you register
-middleware (plugins) this will be handled automatically and you can be sure
-it will only run once the bot is really ready.
+> In code you don't usually have to worry about this as you are writing 
+> event handler modules and registering them with `nani_event`. That means
+> that your code will get executed as you expect and you don't have to worry
+> about anything except implementing the desired behavior.
 
 ### doing stuff
 As of yet, the bot doesn't do anything by itself. However you can do some

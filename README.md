@@ -309,12 +309,12 @@ generator service is described in a seperate section.
 You can see that from inside the handler, you can easily interact with the
 bot using the `nani_bot` registered process. As mentioned before you can
 simply use the `say/2` and `emote/2` functions for basic responses and for
-more advanced (low level) stuff you can use `send/1` as well. Oh and there's
-a `join/1` method to join channels (a `part/1` method is planned as well
+more advanced (low level) stuff you can use `send/1`. Oh and there's
+a `join/1` method to join channels (a `part/1` method is planned
 because it just makes sense in the context of having a `join` method). 
 
-If you want to interact with the markov server you can easily do that as well 
-from inside any handler by using the API exposed by the `markov_server` process.
+If you want to interact with the markov server you can easily do that 
+by using the API exposed by the `markov_server` process.
 
 # notes on the random text generation
 This is just for those who are interested or wanna make sense

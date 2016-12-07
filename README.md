@@ -257,25 +257,6 @@ Response = fun(Len) -> string:join(markov_server:generate(Len), " ") end.
 
 Just remember, the `generate/1` function returns tokens.
 
-# sandbox (x, deprecated)
-There's a seperate `sandbox` process that is responsible for running
-any middleware. This is better than hacking it onto the bot itself.
-
-The idea is that only the middleware server will crash (at worst) if
-something goes wrong and not the whole bot.
-```
-> sandbox:start(), Respond = fun respond:handler/1, sandbox:msg(Respond).
-``` 
-
-This will register a random answering handler from the `respond` module.
-There's also a `commands` module that has a basic `info` command:
-```
-> Info = fun commands:info/1, sandbox:msg(Info).
-```
-
-This will output some information on the vocab memory whenever someone 
-types `!info`.
-
 # plugins
 At first the idea of having a middleware pipeline seemed like a nice fit.
 After all, it's what the Node bots use so why not here? Turns out it's 

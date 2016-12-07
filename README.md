@@ -289,7 +289,7 @@ executing (the equivalent of calling `done()` in callback land).
 
 Note that it's usually a good idea to implement a catch-all clause in
 for your `handle_event/2` implementation. This handler should do nothing
-except pushback `{ok, State}` back to the client.
+except pushback `{ok, State}` to the client.
 
 To start, take a look at either the `greeter` or `markov_respond` module.
 Both of them are implemented as a handler for the `nani_event` process.

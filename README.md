@@ -42,7 +42,8 @@ IRC client. The core of the bot is implemented in `nani_bot` as a `gen_statem`
 behavior. Its basic job is to listen to the IRC socket and emit events
 via the `nani_event` event emitter. Clients in the form of event handlers
 and other processes using the bot can use the `nani_bot` interface to
-interact with the IRC connection. 
+interact with the underlying IRC connection in both high and reasonably
+low level ways. 
 
 TODO: The `nani_utils` module contains some helper functions which 
 might not even be used anymore.
@@ -58,7 +59,7 @@ This is a server that can generate random text and also *learn* on the fly.
 You can dynamically *seed* it using any of the `seed` methods and it will
 incorporate that text into its vocabulary. It uses ETS memory backed
 tables as the default storage mechanism and as such is quite fast but your
-bot might suffer from *amnesia*.
+bot might suffer from *amnesia* if the `markov_server` process dies.
 
 Note that it would be trivial to use disk based tables but there is really
 no need. The bot is pretty idempotent (and functional) in that when you seed
@@ -130,24 +131,29 @@ We need some `Config` such as:
 > Config = [{host, "irc.freenode.net"}, {port, 6667}, {nick, "YourBotNick"}].
 ```
 
-So we know how to connect to the IRC network. Note that in most cases you 
-have to register your bot (nick) first.
+So we know how to connect to the IRC network. Note that you might have to register 
+your bot (nick) first. This mostly depends on the network you're trying to connect
+to.
 
-Now we are ready to connect. First start the bot:
+Now we are ready to star the bot. Note that this only starts the process, the 
+bot won't actually do anything yet. It's just waiting there for commands.
 ```
 > nani_bot:start(Config).
 ```
 
-And then tell the bot to connect:
+Next we tell the bot to connect:
 ```
 > nani_bot:connect().
 ``` 
 
-And... Eventually you should get some notifications in your shell. 
-The bot is connecting. Once it's ready you can tell it to join some channel:
-```
-> nani_bot:join("##somechannel").
-```
+This will prompt the bot to go ahead and try and make an actual connection
+using the `Config` we gave earlier. After a bit it should give some (server
+dependent) output on your console and the bot should return to idling.
+
+> At this point the bot is connected and you can inspect this by running `regs().`
+> in your console. Somewhere in that list should be a `nani_bot` as well as a 
+> `nani_conn` process. If either one is missing then something went horribly wrong
+> so please file a bug in that case.
 
 Note that the bot is ready once it received the `RPL_WELCOME` message 
 from the server. At this point you can send it other commands (see below).
@@ -156,6 +162,13 @@ from the server. At this point you can send it other commands (see below).
 > event handler modules and registering them with `nani_event`. That means
 > that your code will get executed as you expect and you don't have to worry
 > about anything except implementing the desired behavior.
+
+At this point the bot *should* be connected and ready to receive commands. You
+could probably interact with it using `send` maybe but the most intersting thing
+would be to try and join a channel:
+```
+> nani_bot:join("##somechannel").
+```
 
 ### doing stuff
 As of yet, the bot doesn't do anything by itself. However you can do some

@@ -257,12 +257,6 @@ Response = fun(Len) -> string:join(markov_server:generate(Len), " ") end.
 
 Just remember, the `generate/1` function returns tokens.
 
-# todo
-* Finish and incorporate middle-ware (plugin) server
-* Add proper supervisor tree(s)
-* Complete proper OTP application(s)
-* Split off markov_server to seperate app (maybe)
-
 # sandbox (x, deprecated)
 There's a seperate `sandbox` process that is responsible for running
 any middleware. This is better than hacking it onto the bot itself.
@@ -524,3 +518,8 @@ Remember you do func assignment in the shell, I usually have something like:
 And then I can just go `R(13)` to spew some random dribble on some kind of 
 channel. You could parametrize that as well if you're really 
 [fansy](http://www.notaddicted.com/fansythefamous.php).
+
+## todo
+* Add proper supervisor tree(s)
+* Complete proper OTP application(s)
+* Split off markov_server to seperate app (maybe)

@@ -135,7 +135,7 @@ So we know how to connect to the IRC network. Note that you might have to regist
 your bot (nick) first. This mostly depends on the network you're trying to connect
 to.
 
-Now we are ready to star the bot. Note that this only starts the process, the 
+Now we are ready to start the bot. Note that this only starts the process, the 
 bot won't actually do anything yet. It's just waiting there for commands.
 ```
 > nani_bot:start(Config).

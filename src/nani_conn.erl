@@ -46,7 +46,7 @@ handle_call(_Request, _From, State) ->
     {reply, Reply, State}.
 
 handle_cast({send, Data}, {_Parent, Socket} = State) ->
-    io:format("=> ~p~n", [Data]),
+    %io:format("=> ~p~n", [Data]),
     gen_tcp:send(Socket, Data),
     {noreply, State};
 
@@ -54,16 +54,16 @@ handle_cast(_Msg, State) ->
     {noreply, State}.
 
 handle_info({tcp, _Socket, Data}, {Parent, _Socket} = State) ->
-    io:format("<= ~p~n", [Data]),
+    %io:format("<= ~p~n", [Data]),
     handle_data(Parent, Data),
     {noreply, State};
 
 handle_info({tcp_error, _Socket, Reason}, State) ->
-    io:format("error: ~p~n", [Reason]),
+    %io:format("error: ~p~n", [Reason]),
     {noreply, State};
 
 handle_info({tcp_closed, Socket}, State) ->
-    io:format("closed: ~p~n", [Socket]),
+    %io:format("closed: ~p~n", [Socket]),
     {noreply, State};
 
 handle_info(_Info, State) ->

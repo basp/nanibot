@@ -154,7 +154,6 @@ ready(internal, {part, _Props}, _Data) ->
 
 ready(internal, {names, Channel, Names}, Data) ->
     Nick = Data#state.nick,
-    % send_hello(Conn, Nick, Channel, Names),
     nani_event:names(Nick, Channel, Names),
     {keep_state_and_data, []};
 
@@ -185,7 +184,7 @@ ready(cast, {received, Msg}, _Data) ->
             Actions = [{next_event, internal, {privmsg, Props}}],
             {keep_state_and_data, Actions};
         _ -> 
-            io:format("~p~n", [Match]),
+            % io:format("~p~n", [Match]),
             {keep_state_and_data, []}
     end;
 

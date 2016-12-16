@@ -3,7 +3,14 @@
 -behaviour(gen_statem).
 
 %% API
--export([start/1, connect/0, stop/0, send/1, join/1, say/2, emote/2, speak/2]).
+-export([start/1, connect/0, stop/0, 
+         send/1, join/1, say/2, emote/2, speak/2,
+         nick/0, nick/1]).
+
+% TODO: 
+% nick/0 and nick/1 are a bit of a hack. We really should
+% just parse the message for /NICK and other commands that We
+% need to sync with the internal bot state.
 
 %% state functions
 -export([standby/3, connecting/3, registering/3, ready/3]).
@@ -59,6 +66,12 @@ send(Msg) ->
 stop() -> 
     gen_statem:stop(name()).
 
+nick() ->
+    gen_statem:call(name(), get_nick).
+
+nick(Nick) ->
+    gen_statem:cast(name(), {set_nick, Nick}).
+
 %%%============================================================================
 %%% gen_statem callbacks
 %%%============================================================================
@@ -87,7 +100,7 @@ callback_mode() -> state_functions.
 standby(cast, connect, Data) ->
     Host = Data#state.host,
     Port = Data#state.port,
-    {ok, Pid} = nani_conn:start_link(self(), Host, Port),
+    {ok, Pid} = nani_conn:start(Host, Port),
     NewData = Data#state{conn = Pid},
     {next_state, connecting, NewData};
 
@@ -180,6 +193,14 @@ ready(cast, {send, Msg}, Data) ->
     Conn = Data#state.conn,
     send(Conn, Msg),
     {keep_state_and_data, []};
+    
+ready({call, From}, get_nick, Data) ->
+    Actions = [{reply, From, Data#state.nick}],
+    {keep_state_and_data, Actions};
+
+ready({cast}, {set_nick, Nick}, Data) ->
+    NewData = Data#state{nick = Nick},
+    {keep_state, NewData};
 
 ready(_EventType, _EventContent, _Data) ->
     {keep_state_and_data, []}.

@@ -11,7 +11,8 @@ init([]) ->
     {ok, []}.
 
 handle_event({names, Nick, Channel, Names}, State) ->
-    io:format("~p~n", [{Nick, Channel, Names}]),
+    % When and why did this suddenly stopped working?
+    % io:format("~p~n", [{Nick, Channel, Names}]),
     Others = lists:filter(fun (X) -> X =/= Nick end, Names),
     Msg = case Others of
             [Someone] -> "Hiya " ++ Someone ++ "!";

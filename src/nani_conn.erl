@@ -17,6 +17,10 @@ opts() -> [binary, {active, true}, {packet, line}, {keepalive, true}].
 %%%============================================================================
 %%% API
 %%%============================================================================
+start(Host, Port) ->
+    Args = [Host, Port],
+    gen_server:start({local, ?SERVER}, ?MODULE, Args, []).
+
 start_link(Parent, Host, Port) ->
     Args = [Parent, Host, Port],
     gen_server:start_link({local, ?SERVER}, ?MODULE, Args, []).

@@ -184,7 +184,6 @@ ready(cast, {received, Msg}, _Data) ->
             Actions = [{next_event, internal, {privmsg, Props}}],
             {keep_state_and_data, Actions};
         _ -> 
-            % io:format("~p~n", [Match]),
             {keep_state_and_data, []}
     end;
 

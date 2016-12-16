@@ -46,24 +46,24 @@ handle_call(_Request, _From, State) ->
     {reply, Reply, State}.
 
 handle_cast({send, Data}, {_Parent, Socket} = State) ->
-    %io:format("=> ~p~n", [Data]),
     gen_tcp:send(Socket, Data),
+    nani_event:send(Data)
     {noreply, State};
 
 handle_cast(_Msg, State) ->
     {noreply, State}.
 
 handle_info({tcp, _Socket, Data}, {Parent, _Socket} = State) ->
-    %io:format("<= ~p~n", [Data]),
+    nani_event:receive(Data),
     handle_data(Parent, Data),
     {noreply, State};
 
 handle_info({tcp_error, _Socket, Reason}, State) ->
-    %io:format("error: ~p~n", [Reason]),
+    nani_event:tcp_error(Reason),
     {noreply, State};
 
 handle_info({tcp_closed, Socket}, State) ->
-    %io:format("closed: ~p~n", [Socket]),
+    nani_event:tcp_closed(Socket),
     {noreply, State};
 
 handle_info(_Info, State) ->

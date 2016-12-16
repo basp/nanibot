@@ -2,7 +2,7 @@
 
 -export([start/0, start_link/0, add_handler/2, delete_handler/2]).
 
--export([privmsg/4, names/3]).
+-export([privmsg/4, names/3, received/Data]).
 
 -define(SERVER, ?MODULE).
 
@@ -23,3 +23,15 @@ privmsg(Nick, From, To, Text) ->
 
 names(Nick, Channel, Names) ->
     gen_event:notify(?SERVER, {names, Nick, Channel, Names}).
+
+receive(Data) ->
+    gen_event:notify(?SERVER, {receive, Data}).
+
+send(Data) ->
+    gen_event:notify(?SERVER, {send, Data}).
+
+tcp_error(Reason) ->
+    gen_event:notify(?SERVER, {tcp_error, Reason}).
+
+tcp_closed(Socket) ->
+    gen_event:notify(?SERVER, {tcp_closed, Socket}).

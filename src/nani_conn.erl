@@ -6,7 +6,7 @@
 -define(CRLF, "\r\n").
 
 %% API
--export([start_link/3, send/2]).
+-export([start/3, start_link/3, send/2]).
 
 %% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
@@ -17,8 +17,8 @@ opts() -> [binary, {active, true}, {packet, line}, {keepalive, true}].
 %%%============================================================================
 %%% API
 %%%============================================================================
-start(Host, Port) ->
-    Args = [Host, Port],
+start(Parent, Host, Port) ->
+    Args = [Parent, Host, Port],
     gen_server:start({local, ?SERVER}, ?MODULE, Args, []).
 
 start_link(Parent, Host, Port) ->

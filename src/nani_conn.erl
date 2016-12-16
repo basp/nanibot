@@ -47,14 +47,14 @@ handle_call(_Request, _From, State) ->
 
 handle_cast({send, Data}, {_Parent, Socket} = State) ->
     gen_tcp:send(Socket, Data),
-    nani_event:send(Data)
+    nani_event:tcp_send(Data),
     {noreply, State};
 
 handle_cast(_Msg, State) ->
     {noreply, State}.
 
 handle_info({tcp, _Socket, Data}, {Parent, _Socket} = State) ->
-    nani_event:receive(Data),
+    nani_event:tcp_receive(Data),
     handle_data(Parent, Data),
     {noreply, State};
 

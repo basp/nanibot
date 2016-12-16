@@ -24,10 +24,10 @@ privmsg(Nick, From, To, Text) ->
 names(Nick, Channel, Names) ->
     gen_event:notify(?SERVER, {names, Nick, Channel, Names}).
 
-receive(Data) ->
-    gen_event:notify(?SERVER, {receive, Data}).
+tcp_receive(Data) ->
+    gen_event:notify(?SERVER, {tcp_receive, Data}).
 
-send(Data) ->
+tcp_send(Data) ->
     gen_event:notify(?SERVER, {send, Data}).
 
 tcp_error(Reason) ->

@@ -10,11 +10,11 @@
 init([]) ->
     {ok, []}.
 
-handle_event({receive, Data}, State) ->
+handle_event({tcp_receive, Data}, State) ->
     io:format("<= ~p~n", [Data]),
     {ok, State};
 
-handle_event({send, Data), State) ->
+handle_event({tcp_send, Data), State) ->
     io:format("=> ~p~n", [Data]),
     {ok, State};
 

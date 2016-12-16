@@ -30,7 +30,7 @@ tcp_receive(Data) ->
     gen_event:notify(?SERVER, {tcp_receive, Data}).
 
 tcp_send(Data) ->
-    gen_event:notify(?SERVER, {send, Data}).
+    gen_event:notify(?SERVER, {tcp_send, Data}).
 
 tcp_error(Reason) ->
     gen_event:notify(?SERVER, {tcp_error, Reason}).

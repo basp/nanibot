@@ -1,6 +1,10 @@
 -module(nani).
 
--export([init/1]).
+-export([init/0, init/1]).
+
+-define(DEFAULT_CONFIG, "./nani.config").
+
+init() -> init(?DEFAULT_CONFIG).
 
 init(ConfigFile) ->
     case file:consult(ConfigFile) of

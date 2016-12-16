@@ -2,7 +2,9 @@
 
 -export([start/0, start_link/0, add_handler/2, delete_handler/2]).
 
--export([privmsg/4, names/3, received/Data]).
+-export([privmsg/4, names/3,
+         tcp_receive/1, tcp_send/1, 
+         tcp_error/1, tcp_closed/1]).
 
 -define(SERVER, ?MODULE).
 

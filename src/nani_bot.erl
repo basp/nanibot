@@ -100,7 +100,7 @@ callback_mode() -> state_functions.
 standby(cast, connect, Data) ->
     Host = Data#state.host,
     Port = Data#state.port,
-    {ok, Pid} = nani_conn:start(Host, Port),
+    {ok, Pid} = nani_conn:start(self(), Host, Port),
     NewData = Data#state{conn = Pid},
     {next_state, connecting, NewData};
 

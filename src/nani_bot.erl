@@ -186,19 +186,18 @@ ready(cast, {received, Msg}, _Data) ->
             Actions = [{next_event, internal, {ping, Ping}}],
             {keep_state_and_data, Actions};
         [User, <<"JOIN">>, Channel] ->
-            Props = [{user, User}, {channel, Channel}],
+            Props = [{user, binary_to_list(User)}, {channel, Channel}],
             Actions = [{next_event, internal, {join, Props}}],
             {keep_state_and_data, Actions};
         [User, <<"PART">>, Channel] ->
-            Props = [{user, User}, {channel, Channel}],
-            Actions = [{next, event, internal, {part, Props}}],
+            Props = [{user, binary_to_list(User)}, {channel, Channel}],
+            Actions = [{next_event, internal, {part, Props}}],
             {keep_state_and_data, Actions};
         [From, <<"PRIVMSG">>, To, Text] ->
             Props = [{from, From}, {to, To}, {text, Text}],
             Actions = [{next_event, internal, {privmsg, Props}}],
             {keep_state_and_data, Actions};
         _ -> 
-            error_logger:info_msg(Match),
             {keep_state_and_data, []}
     end;
 

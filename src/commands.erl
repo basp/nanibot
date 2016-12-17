@@ -22,8 +22,8 @@ delete_handler() ->
 %%%============================================================================
 init([]) -> {ok, []}.
 
-handle_event({privmsg, {Nick, Aliases}, From, To, Text}, State) ->
-    {ok, State}.
+% handle_event({privmsg, {Nick, Aliases}, From, To, Text}, State) ->
+%     {ok, State};
 
 handle_event(_Event, State) -> {ok, State}.
 

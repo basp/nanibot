@@ -3,20 +3,28 @@
 -behaviour(gen_statem).
 
 %% API
--export([start/1, connect/0, stop/0, 
-         send/1, join/1, say/2, emote/2, speak/2,
-         nick/0, nick/1]).
-
-% TODO: 
-% nick/0 and nick/1 are a bit of a hack. We really should
-% just parse the message for /NICK and other commands that We
-% need to sync with the internal bot state.
+-export([start/1, 
+         start_link/1,
+         stop/0,
+         connect/0,  
+         join/1,
+         part/1,
+         send/1, 
+         say/2, 
+         emote/2]).
 
 %% state functions
--export([standby/3, connecting/3, registering/3, ready/3]).
+-export([standby/3, 
+         connecting/3, 
+         registering/3, 
+         ready/3]).
 
 %% gen_statem callbacks
--export([init/1, callback_mode/0, handle_event/4, terminate/3, code_change/4]).
+-export([init/1, 
+         callback_mode/0, 
+         handle_event/4, 
+         terminate/3, 
+         code_change/4]).
 
 -define(RPL_WELCOME,        "001").
 -define(RPL_YOURHOST,       "002").
@@ -40,6 +48,9 @@ real_name() -> ?REAL_NAME.
 start(Config) -> 
     gen_statem:start({local, name()}, ?MODULE, Config, []).
 
+start_link(Config) ->
+    gen_statem:start_link({local, name()}, ?MODULE, Config, []).
+
 connect() -> 
     gen_statem:cast(name(), connect).
 
@@ -47,10 +58,9 @@ join(Channel) ->
     Msg = ["JOIN ", Channel],
     gen_statem:cast(name(), {send, Msg}).
 
-speak(To, Count) ->
-    Tokens = markov_server:generate(Count),
-    Text = string:join(Tokens, " "),
-    say(To, Text).
+part(Channel) ->
+    Msg = ["PART", Channel],
+    gen_statem:cast(name(), {send, Msg}).
 
 say(To, Text) ->
     Msg = ["PRIVMSG ", To, " :", Text],
@@ -66,12 +76,6 @@ send(Msg) ->
 stop() -> 
     gen_statem:stop(name()).
 
-nick() ->
-    gen_statem:call(name(), get_nick).
-
-nick(Nick) ->
-    gen_statem:cast(name(), {set_nick, Nick}).
-
 %%%============================================================================
 %%% gen_statem callbacks
 %%%============================================================================
@@ -84,10 +88,10 @@ init(Config) ->
 
 terminate(_Reason, _State, _Data) -> ok.
 
-code_change(_OldVsn, State, Data, _Extra) ->
+code_change(_OldVsn, State, Data, _Extra) -> 
     {ok, State, Data}.
 
-handle_event(_EventType, _EventContent, _State, _Data) ->
+handle_event(_EventType, _EventContent, _State, _Data) -> 
     {keep_state_and_data, []}.
 
 callback_mode() -> state_functions.
@@ -100,7 +104,7 @@ callback_mode() -> state_functions.
 standby(cast, connect, Data) ->
     Host = Data#state.host,
     Port = Data#state.port,
-    {ok, Pid} = nani_conn:start(self(), Host, Port),
+    {ok, Pid} = nani_conn:start_link(self(), Host, Port),
     NewData = Data#state{conn = Pid},
     {next_state, connecting, NewData};
 
@@ -144,12 +148,18 @@ ready(internal, {ping, Ping}, Data) ->
     send_pong(Conn, Ping),
     {keep_state_and_data, []};
 
-ready(internal, {join, Props}, _Data) ->
-    _Channel = proplists:get_value(channel, Props), 
-    _Nick = proplists:get_value(nick, Props),
+ready(internal, {join, Props}, Data) ->
+    Nick = Data#state.nick,
+    Channel = proplists:get_value(channel, Props), 
+    User = proplists:get_value(user, Props),
+    nani_event:join(Nick, Channel, User),
     {keep_state_and_data, []};
 
-ready(internal, {part, _Props}, _Data) ->
+ready(internal, {part, Props}, Data) ->
+    Nick = Data#state.nick,
+    Channel = proplists:get_value(channel, Props),
+    User = proplists:get_value(user, Props),
+    nani_event:part(Nick, Channel, User),
     {keep_state_and_data, []};
 
 ready(internal, {names, Channel, Names}, Data) ->
@@ -175,15 +185,20 @@ ready(cast, {received, Msg}, _Data) ->
         [_, _, <<"PING">>, Ping] ->
             Actions = [{next_event, internal, {ping, Ping}}],
             {keep_state_and_data, Actions};
-        [Nick, <<"JOIN">>, Channel] ->
-            Props = [{nick, Nick}, {channel, Channel}],
+        [User, <<"JOIN">>, Channel] ->
+            Props = [{user, User}, {channel, Channel}],
             Actions = [{next_event, internal, {join, Props}}],
+            {keep_state_and_data, Actions};
+        [User, <<"PART">>, Channel] ->
+            Props = [{user, User}, {channel, Channel}],
+            Actions = [{next, event, internal, {part, Props}}],
             {keep_state_and_data, Actions};
         [From, <<"PRIVMSG">>, To, Text] ->
             Props = [{from, From}, {to, To}, {text, Text}],
             Actions = [{next_event, internal, {privmsg, Props}}],
             {keep_state_and_data, Actions};
         _ -> 
+            error_logger:info_msg(Match),
             {keep_state_and_data, []}
     end;
 

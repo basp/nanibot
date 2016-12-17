@@ -1,8 +1,8 @@
 {application, nanibot,
- [{description, "Experimental"},
+ [{description, "An Erlang IRC bot"},
   {vsn, "0.1.0"},
-  {modules, [nani_app]},
-  {registered, [nani_sup]},
-  {applications, [kernel, stdlib]},
-  {mod, {nani_app, []}}
- ]}.
+  {modules, [nani_app, nani_sup]},
+  {registered, []},
+  {applications, [kernel, stdlib, sasl]},
+  {mod, {nani_app, [{host, "irc.freenode.net"}, {port, 6667}, {nick, "Nanibot"}]}}
+]}.

@@ -37,7 +37,6 @@ init([Parent, Host, Port]) ->
             gen_statem:cast(Parent, success),
             {ok, {Parent, Socket}};
         {error, Reason} ->
-            io:format("error connecting: ~p~n", [Reason]),
             {stop, Reason}
     end.
 

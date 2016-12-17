@@ -2,9 +2,14 @@
 
 -export([start/0, start_link/0, add_handler/2, delete_handler/2]).
 
--export([privmsg/4, names/3,
-         tcp_receive/1, tcp_send/1, 
-         tcp_error/1, tcp_closed/1]).
+-export([privmsg/4, 
+         names/3,
+         join/3,
+         part/3,
+         tcp_receive/1, 
+         tcp_send/1, 
+         tcp_error/1, 
+         tcp_closed/1]).
 
 -define(SERVER, ?MODULE).
 
@@ -19,6 +24,12 @@ add_handler(Handler, Args) ->
 
 delete_handler(Handler, Args) ->
     gen_event:delete_handler(?SERVER, Handler, Args).
+
+join(Nick, Channel, User) ->
+    gen_event:notify(?SERVER, {join, Nick, Channel, User}).
+
+part(Nick, Channel, User) ->
+    gen_event:notify(?SERVER, {part, Nick, Channel, User}).
 
 privmsg(Nick, From, To, Text) ->
     gen_event:notify(?SERVER, {privmsg, Nick, From, To, Text}).

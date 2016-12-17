@@ -37,7 +37,7 @@
 
 -define(REAL_NAME, "http://github.com/basp/nanibot").
 
--record(state, {nick, host, port, conn}).
+-record(state, {nick, host, port, conn, alts}).
 
 name() -> nani_bot.
 real_name() -> ?REAL_NAME.
@@ -83,7 +83,8 @@ init(Config) ->
     Nick = proplists:get_value(nick, Config),
     Host = proplists:get_value(host, Config),
     Port = proplists:get_value(port, Config),
-    Data = #state{nick = Nick, host = Host, port = Port},
+    Alts = proplists:get_value(alts, Config),
+    Data = #state{nick = Nick, host = Host, port = Port, alts = Alts},
     {ok, standby, Data}.
 
 terminate(_Reason, _State, _Data) -> ok.
@@ -149,30 +150,30 @@ ready(internal, {ping, Ping}, Data) ->
     {keep_state_and_data, []};
 
 ready(internal, {join, Props}, Data) ->
-    Nick = Data#state.nick,
+    Bot = {Data#state.nick, Data#state.alts},
     Channel = proplists:get_value(channel, Props), 
     User = proplists:get_value(user, Props),
-    nani_event:join(Nick, Channel, User),
+    nani_event:join(Bot, Channel, User),
     {keep_state_and_data, []};
 
 ready(internal, {part, Props}, Data) ->
-    Nick = Data#state.nick,
+    Bot = {Data#state.nick, Data#state.alts},
     Channel = proplists:get_value(channel, Props),
     User = proplists:get_value(user, Props),
-    nani_event:part(Nick, Channel, User),
+    nani_event:part(Bot, Channel, User),
     {keep_state_and_data, []};
 
 ready(internal, {names, Channel, Names}, Data) ->
-    Nick = Data#state.nick,
-    nani_event:names(Nick, Channel, Names),
+    Bot = {Data#state.nick, Data#state.alts},
+    nani_event:names(Bot, Channel, Names),
     {keep_state_and_data, []};
 
 ready(internal, {privmsg, Props}, Data) ->
-    Nick = Data#state.nick,
+    Bot = {Data#state.nick, Data#state.alts},
     From = proplists:get_value(from, Props),
     To = proplists:get_value(to, Props),
     Text = binary_to_list(proplists:get_value(text, Props)),
-    nani_event:privmsg(Nick, From, To, Text),
+    nani_event:privmsg(Bot, From, To, Text),
     {keep_state_and_data, []};
 
 ready(cast, {received, Msg}, _Data) ->

@@ -25,17 +25,17 @@ add_handler(Handler, Args) ->
 delete_handler(Handler, Args) ->
     gen_event:delete_handler(?SERVER, Handler, Args).
 
-join(Nick, Channel, User) ->
-    gen_event:notify(?SERVER, {join, Nick, Channel, User}).
+join(Bot, Channel, User) ->
+    gen_event:notify(?SERVER, {join, Bot, Channel, User}).
 
-part(Nick, Channel, User) ->
-    gen_event:notify(?SERVER, {part, Nick, Channel, User}).
+part(Bot, Channel, User) ->
+    gen_event:notify(?SERVER, {part, Bot, Channel, User}).
 
-privmsg(Nick, From, To, Text) ->
-    gen_event:notify(?SERVER, {privmsg, Nick, From, To, Text}).
+privmsg(Bot, From, To, Text) ->
+    gen_event:notify(?SERVER, {privmsg, Bot, From, To, Text}).
 
-names(Nick, Channel, Names) ->
-    gen_event:notify(?SERVER, {names, Nick, Channel, Names}).
+names(Bot, Channel, Names) ->
+    gen_event:notify(?SERVER, {names, Bot, Channel, Names}).
 
 tcp_receive(Data) ->
     gen_event:notify(?SERVER, {tcp_receive, Data}).

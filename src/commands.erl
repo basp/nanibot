@@ -1,4 +1,4 @@
--module(greeter).
+-module(commands).
 
 -behavior(gen_event).
 
@@ -22,23 +22,9 @@ delete_handler() ->
 %%%============================================================================
 init([]) -> {ok, []}.
 
-handle_event({names, {Nick, _Alts}, Channel, Names}, State) ->
-    Others = lists:filter(fun (X) -> X =/= Nick end, Names),
-    Msg = case Others of
-            [Someone] -> "Hiya " ++ Someone ++ "!";
-            _ -> "Hi all!"
-        end,
-    nani_bot:say(Channel, Msg),
+handle_event({privmsg, {Nick, Aliases}, From, To, Text}, State) ->
+    case re:run() 
     {ok, State};
-
-handle_event({join, {Nick, _Alts}, Channel, User}, State) ->
-    case Nick =/= User of
-        true -> 
-            nani_bot:say(Channel, "Hiya " ++ User ++ "!"),
-            {ok, State};
-        _ -> 
-            {ok, State}
-    end;
 
 handle_event(_Event, State) -> {ok, State}.
 

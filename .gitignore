@@ -1,13 +1,12 @@
 .eunit
 deps
 *.o
-*.beam
+**/*.beam
 *.plt
-ebin/*.beam
 erl_crash.dump
 rel/example_project
 .concrete/DEV_MODE
 .rebar
 .vscode
 **/*.tab
-*.config
+ebin/nanibot.app

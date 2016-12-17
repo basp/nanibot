@@ -4,5 +4,5 @@
   {modules, [nani_app, nani_sup]},
   {registered, []},
   {applications, [kernel, stdlib, sasl]},
-  {mod, {nani_app, [{host, "irc.freenode.net"}, {port, 6667}, {nick, "Nanibot"}]}}
+  {mod, {nani_app, [{host, "irc.freenode.net"}, {port, 6667}, {nick, "SomeNick"}]}}
 ]}.

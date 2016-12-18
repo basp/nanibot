@@ -1,4 +1,4 @@
--module(nani_logger).
+-module(nani_sasl_logger).
 
 -behaviour(gen_event).
 

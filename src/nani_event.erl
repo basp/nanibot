@@ -3,6 +3,7 @@
 -export([start/0, start_link/0, add_handler/2, delete_handler/2]).
 
 -export([privmsg/4, 
+         command/4,
          names/3,
          join/3,
          part/3,
@@ -33,6 +34,9 @@ part(Bot, Channel, User) ->
 
 privmsg(Bot, From, To, Text) ->
     gen_event:notify(?SERVER, {privmsg, Bot, From, To, Text}).
+
+command(Bot, From, To, Cmd) ->
+    gen_event:notify(?SERVER, {cmd, Bot, From, To, Cmd}).
 
 names(Bot, Channel, Names) ->
     gen_event:notify(?SERVER, {names, Bot, Channel, Names}).

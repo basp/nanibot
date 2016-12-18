@@ -176,6 +176,14 @@ ready(internal, {privmsg, Props}, Data) ->
     nani_event:privmsg(Bot, From, To, Text),
     {keep_state_and_data, []};
 
+ready(internal, {cmd, Props}, Data) ->
+    Bot = {Data#state.nick, Data#state.alts},
+    From = proplists:get_value(from, Props),
+    To = proplists:get_value(to, Props),
+    Cmd = proplists:get_value(cmd, Props),
+    nani_event:command(Bot, From, To, Cmd),
+    {keep_state_and_data, []};
+
 ready(cast, {received, Msg}, _Data) ->
     {match, Match} = nani_utils:parse(Msg),
     case Match of
@@ -193,6 +201,10 @@ ready(cast, {received, Msg}, _Data) ->
         [User, <<"PART">>, Channel] ->
             Props = [{user, binary_to_list(User)}, {channel, Channel}],
             Actions = [{next_event, internal, {part, Props}}],
+            {keep_state_and_data, Actions};
+        [From, <<"PRIVMSG">>, To, <<$!, Cmd/binary>>] ->
+            Props = [{from, From}, {to, To}, {cmd, Cmd}],
+            Actions = [{next_event, internal, {cmd, Props}}],
             {keep_state_and_data, Actions};
         [From, <<"PRIVMSG">>, To, Text] ->
             Props = [{from, From}, {to, To}, {text, Text}],

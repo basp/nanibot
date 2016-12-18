@@ -22,8 +22,9 @@ delete_handler() ->
 %%%============================================================================
 init([]) -> {ok, []}.
 
-% handle_event({privmsg, {Nick, Aliases}, From, To, Text}, State) ->
-%     {ok, State};
+handle_event({cmd, _Bot, _From, _To, Cmd}, State) ->
+    io:format("CMD: ~p~n", [Cmd]),
+    {ok, State};
 
 handle_event(_Event, State) -> {ok, State}.
 

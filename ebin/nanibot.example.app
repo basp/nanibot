@@ -7,7 +7,7 @@
   {mod, {nani_app, 
    [{host, "irc.freenode.net"}, 
     {port, 6667}, 
-    {nick, "Methbot"},
+    {nick, "BotNick"},
     {alts, []}
   ]}}
 ]}.

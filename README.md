@@ -2,11 +2,12 @@
 An Erlang IRC bot wrapped up as an OTP application.
 
 # overview
-Nanibot is at heart a state machine implemented as a `gen_statem` behaviour. 
-This will parse incoming IRC messages and emit events via `nani_event`
-depending on which state it is in. All interesting stuff is mostly implemented
-via `gen_event` handlers listening to the events emitted by `nani_event` or 
-processes involved with or directly manipulating the `nani_bot` process itself.
+Nanibot is at heart a state machine implemented as a `gen_statem` behaviour in
+the `nani_bot` module. This will parse incoming IRC messages and emit events 
+via `nani_event` depending on which state it is in. All interesting stuff is 
+mostly implemented via `gen_event` handlers listening to the events emitted 
+by `nani_event` or processes involved with or directly manipulating the 
+`nani_bot` process itself.
 
 The `nani_bot` process is (for now) the main client API to the bot. It allows 
 for some basic utility commands such as `say`, `emote`, `join` and `part` but

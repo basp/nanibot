@@ -93,7 +93,6 @@ handle_roll_command(Arg1, Arg2) ->
                     Roll = fun(_) -> rand:uniform(Sides) end,
                     Rolls = lists:map(Roll, lists:seq(1, Dice)),
                     Total = lists:sum(Rolls),
-                    % Giigel: paces between digits
                     RollStr = string:join(lists:map(fun integer_to_list/1, Rolls), ", "),
                     {ok, io_lib:format("~p ~s", [Total, "[" ++ RollStr ++ "]"])};
                 {ok, _Sides} ->

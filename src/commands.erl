@@ -41,6 +41,18 @@ handle_event({cmd, _Bot, From, To, Cmd}, State) ->
             H = handle_fread_command,
             MFA = {Mod, H, [Fmt, Arg]},
             apply_command(From, To, MFA);
+        ["roll"] ->
+            H = handle_roll_command,
+            MFA = {Mod, H, ["1", "6"]},
+            apply_command(From, To, MFA);
+        ["roll", NumSides] ->
+            H = handle_roll_command,
+            MFA = {Mod, H, ["1", NumSides]},
+            apply_command(From, To, MFA);
+        ["roll", NumDice, NumSides] ->
+            H = handle_roll_command,
+            MFA = {Mod, H, [NumDice, NumSides]},
+            apply_command(From, To, MFA);
         _ -> 
             unknown_command(From, To, Cmd)
     end,
@@ -73,9 +85,28 @@ apply_command(From, To, {M, F, A}) ->
             nani_bot:say(To, [From, ": ", Msg])
     end.
 
+handle_roll_command(Arg1, Arg2) ->
+    case try_parse_int(Arg1) of
+        {ok, Dice} ->
+            case try_parse_int(Arg2) of
+                {ok, Sides} when Dice < 128 andalso Sides < 128 ->
+                    Roll = fun(_) -> rand:uniform(Sides) end,
+                    Rolls = lists:map(Roll, lists:seq(1, Dice)),
+                    Total = lists:sum(Rolls),
+                    % Giigel: paces between digits
+                    RollStr = string:join(lists:map(fun integer_to_list/1, Rolls), ", "),
+                    {ok, io_lib:format("~p ~s", [Total, "[" ++ RollStr ++ "]"])};
+                {ok, _Sides} ->
+                    {error, floodgate};
+                Err -> Err
+            end;
+        Err -> Err
+    end. 
+
 handle_fac_command(Arg) ->
     case try_parse_int(Arg) of
-        {ok, Int} -> F = fac(Int), {ok, integer_to_list(F)};
+        {ok, Int} when Int < 128 -> F = fac(Int), {ok, integer_to_list(F)};
+        {ok, _Int} -> {error, floodgate};
         Err -> Err
     end. 
 

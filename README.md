@@ -43,3 +43,26 @@ After you connected you can issue commands to the bot:
 
 Or attach `gen_event` handlers to respond to IRC messages that the bot 
 receives.
+
+# commands
+Nani can recognizes a command when a message is prefixed with a *bang* (`!`) 
+character, for example:
+
+    !frotz quux baz
+
+Would be a (hypothetical) command `frotz` with arguments `quux` and `baz`.
+
+Commands are implemented as standard `gen_event` handlers listening to events
+emitted by `nani_event` so they work the same as any other handler. Command
+handlers just listen for the `cmd` event and use the information supplied to
+see if they can run a known command. For an example, take a look at 
+`commands.erl` which has a few basic commands implemented.
+
+One note of warning, when implementing handlers of any kind, be aware that the
+capabilities of the Erlang VM probably vastly overshadow that of the IRC
+connection. In other words, Erlang will happily pump pages of digits to your 
+IRC connection if you don't put in a *floodgate* yourself (some examples of
+these are also in `commands.erl`).
+
+# events
+TODO: Document all the standard events.

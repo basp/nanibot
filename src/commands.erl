@@ -3,13 +3,11 @@
 -behavior(gen_event).
 
 %% API
-% -export([add_handler/0, delete_handler/0]).
+-export([add_handler/0, delete_handler/0]).
 
 %% gen_event callbacks
-% -export([init/1, handle_event/2, handle_call/2, handle_info/2, 
-%          terminate/2, code_change/3]).
-
--compile(export_all).
+-export([init/1, handle_event/2, handle_call/2, handle_info/2, 
+         terminate/2, code_change/3]).
 
 %%%============================================================================
 %%% API
@@ -21,7 +19,7 @@ delete_handler() ->
     nani_event:delete_handler(?MODULE, []).
     
 %%%============================================================================
-%%% gen_statem callbacks
+%%% gen_event callbacks
 %%%============================================================================
 init([]) -> {ok, []}.
 

@@ -9,6 +9,11 @@
 -export([init/1, handle_event/2, handle_call/2, handle_info/2, 
          terminate/2, code_change/3]).
 
+-export([handle_fac_command/1,
+         handle_roll_command/2,
+         handle_fmt_command/2,
+         handle_fread_command/2]).
+
 %%%============================================================================
 %%% API
 %%%============================================================================

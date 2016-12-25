@@ -87,7 +87,7 @@ handle_roll_command(Arg1, Arg2) ->
     case try_parse_int(Arg1) of
         {ok, Dice} ->
             case try_parse_int(Arg2) of
-                {ok, Sides} when Dice < 128 andalso Sides < 128 ->
+                {ok, Sides} when Dice < 101 andalso Sides < 101 ->
                     Roll = fun(_) -> rand:uniform(Sides) end,
                     Rolls = lists:map(Roll, lists:seq(1, Dice)),
                     Total = lists:sum(Rolls),
@@ -102,7 +102,7 @@ handle_roll_command(Arg1, Arg2) ->
 
 handle_fac_command(Arg) ->
     case try_parse_int(Arg) of
-        {ok, Int} when Int < 128 -> F = fac(Int), {ok, integer_to_list(F)};
+        {ok, Int} when Int < 101 -> F = fac(Int), {ok, integer_to_list(F)};
         {ok, _Int} -> {error, floodgate};
         Err -> Err
     end. 

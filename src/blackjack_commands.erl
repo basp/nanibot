@@ -94,7 +94,7 @@ handle_stand_command() ->
     format_result(Res).
  
 format_result({State, {player, PlayerScore, PlayerCards}, {house, HouseScore, HouseCards}}) ->
-   PlayerCardStr = string:join([deck:format_card(X) || X <- PlayerCards], " "),
+    PlayerCardStr = string:join([deck:format_card(X) || X <- PlayerCards], " "),
     HouseCardStr = string:join([deck:format_card(X) || X <- HouseCards], " "),
     Args = [State, PlayerScore, PlayerCardStr, HouseScore, HouseCardStr],
     Msg = io_lib:format("[~p] player ~p (~s), house ~p (~s)", Args),

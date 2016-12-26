@@ -9,6 +9,7 @@
 -export([init/1, handle_event/2, handle_call/2, handle_info/2, 
          terminate/2, code_change/3]).
 
+%% handlers
 -export([handle_fac_command/1,
          handle_roll_command/2,
          handle_fmt_command/2,
@@ -29,7 +30,7 @@ delete_handler() ->
 init([]) -> {ok, []}.
 
 handle_event({cmd, _Bot, From, To, Cmd}, State) ->
-    Tokens = parse_cmd(Cmd),
+    Tokens = nani_utils:parse_cmd(Cmd),
     Mod = commands,
     case Tokens of
         ["fac", Arg] -> 
@@ -55,9 +56,7 @@ handle_event({cmd, _Bot, From, To, Cmd}, State) ->
         ["roll", NumDice, NumSides] ->
             H = handle_roll_command,
             MFA = {Mod, H, [NumDice, NumSides]},
-            apply_command(From, To, MFA);
-        _ -> 
-            unknown_command(From, To, Cmd)
+            apply_command(From, To, MFA)
     end,
     {ok, State};
 
@@ -76,9 +75,6 @@ code_change(_OldVsn, State, _Extra) -> {ok, State}.
 %%%============================================================================
 %%% Internal functions
 %%%============================================================================
-unknown_command(From, To, Cmd) ->
-    nani_bot:say(To, [From, ": ", "unknown command '", Cmd, "'"]).
-
 apply_command(From, To, {M, F, A}) ->
     case apply(M, F, A) of 
         {ok, Str} -> 
@@ -146,7 +142,3 @@ try_parse_int(Str) ->
 
 fac(0) -> 1;
 fac(N) -> N * fac(N - 1).
-
-parse_cmd(Cmd) ->
-   Str = binary_to_list(Cmd),
-   lists:map(fun string:to_lower/1, string:tokens(Str, " ")).

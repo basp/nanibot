@@ -1,7 +1,7 @@
 -module(nani_utils).
 
 %% API
--export([parse/1]).
+-export([parse/1, parse_cmd/1]).
 
 -spec parse(binary()) -> {match, [binary()]}.
 
@@ -15,6 +15,10 @@ parse(<<":", Line/binary>>) ->
 
 parse(Line) ->
     parse_command(Line, [<<>>, <<>>]).
+
+parse_cmd(Cmd) ->
+   Str = binary_to_list(Cmd),
+   lists:map(fun string:to_lower/1, string:tokens(Str, " ")).
 
 %%%============================================================================
 %%% Internal functions

@@ -1,6 +1,6 @@
 -module(deck).
 
--export([french/0, shuffle/1, draw/1]).
+-export([french/0, shuffle/1, draw/1, format_card/1]).
 
 %%%============================================================================
 %%% API
@@ -16,9 +16,29 @@ shuffle(List) ->
 draw([]) -> {none, []};
 draw([H|T]) -> {H, T}.
 
+format_card({Rank, Suit}) ->
+    lists:append(format_rank(Rank), format_suit(Suit)).
+
 %%%============================================================================
 %%% Internal functions
 %%%============================================================================
+format_rank(Rank) ->
+    case Rank of
+        ace -> "A";
+        king -> "K";
+        queen -> "Q";
+        jack -> "J";
+        N -> integer_to_list(N)
+    end.
+
+format_suit(Suit) ->
+    case Suit of 
+        spades -> "S";
+        diamonds -> "D";
+        clubs -> "C";
+        hearts -> "H"
+    end.
+
 randomize(1, List) -> randomize(List);
 
 randomize(T, List) ->

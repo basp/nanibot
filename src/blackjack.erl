@@ -92,12 +92,13 @@ standby({call, From}, {deal, _Who}, Data) ->
     Player = [Pcard1, Pcard2],
     House = [Hcard1],
     PlayerScore = score(Player),
+    HouseScore = score(House),
     case PlayerScore of
         21 -> 
-            Reply = {player_won, PlayerScore},
-            {keep_state_and_data, [reply, From, Reply]};
+            Reply = {player_won, {player, PlayerScore, Player}, {house, HouseScore, House}},
+            {keep_state_and_data, [{reply, From, Reply}]};
         _ ->
-            Reply = [{player, Player}, {house, House}],
+            Reply = {ok, {player, PlayerScore, Player}, {house, HouseScore, House}},
             NewData = Data#state{deck = Deck3, player = Player, house = House},
             {next_state, player_turn, NewData, [{reply, From, Reply}]}
     end;
@@ -107,7 +108,8 @@ standby({call, From}, status, Data) ->
     {keep_state, Data, [{reply, From, Reply}]};
 
 standby({call, From}, _Msg, Data) ->
-    {keep_state, Data, [{reply, From, ok}]}.
+    Reply = {ok, standby},
+    {keep_state, Data, [{reply, From, Reply}]}.
 
 %%%----------------------------------------------------------------------------
 player_turn(cast, _Event, _Data) ->
@@ -115,35 +117,38 @@ player_turn(cast, _Event, _Data) ->
 
 player_turn({call, From}, {stand, _Who}, Data) ->
     Player = Data#state.player,
-    Deck = Data#state.deck,
-    {House, Deck1} = draw_to(17, Deck, Data#state.house),
-    NewData = Data#state{deck = Deck1, house = House},
     PlayerScore = score(Player),
+    Deck = Data#state.deck,
+    {TempHouse, Deck1} = draw_to(PlayerScore, Deck, Data#state.house),
+    House = lists:reverse(TempHouse),
+    NewData = Data#state{deck = Deck1, house = House},
     HouseScore = score(House),
     Reply = case {PlayerScore, HouseScore} of
-        {N, N} -> {draw, {player, Player}, {house, House}};
-        {X, Y} when X > Y -> {player_won, {player, Player}, {house, House}};
-        _ -> {house_won, {player, Player}, {house, House}}
+        {N, N} -> 
+            {draw, {player, PlayerScore, Player}, {house, HouseScore, House}};
+        {X, Y} when X < Y andalso Y =< 21 ->
+            {house_won, {player, PlayerScore, Player}, {house, HouseScore, House}};
+        _ -> 
+            {player_won, {player, PlayerScore, Player}, {house, HouseScore, House}}
     end,
-    io:format("~p~n", [Reply]),
     {next_state, standby, NewData, [{reply, From, Reply}]};
 
 player_turn({call, From}, {hit, _Who}, Data) ->
     {Pcard, Deck1} = deck:draw(Data#state.deck),
-    Player = [Pcard|Data#state.player],
-    House = Data#state.house,
+    Player = Data#state.player ++ [Pcard],
+    House = lists:reverse(Data#state.house),
     PlayerScore = score(Player),
+    HouseScore = score(House),
     NewData = Data#state{deck = Deck1, player = Player},
     case PlayerScore of
         21 -> 
-            Reply = {player_won, {player, Player}, {house, House}},
+            Reply = {player_won, {player, PlayerScore, Player}, {house, HouseScore, House}},
             {next_state, standby, NewData, [{reply, From, Reply}]};
         N when N > 21 -> 
-            Reply = {house_won, {player, Player}, {house, House}},
-            io:format("~p~n", [Reply]),
+            Reply = {house_won, {player, PlayerScore, Player}, {house, HouseScore, House}},
             {next_state, standby, NewData, [{reply, From, Reply}]};
         _ ->
-            Reply = {{player, Player}, {house, House}},
+            Reply = {ok, {player, PlayerScore, Player}, {house, HouseScore, House}},
             {keep_state, NewData, [{reply, From, Reply}]}
     end;
 
@@ -152,7 +157,7 @@ player_turn({call, From}, status, Data) ->
     {keep_state, Data, [{reply, From, Reply}]};
 
 player_turn({call, From}, _Msg, Data) ->
-    {keep_state, Data, [{reply, From, ok}]}.
+    {keep_state, Data, [{reply, From, {ok, player_turn}}]}.
 
 %%%============================================================================
 %%% Internal functions

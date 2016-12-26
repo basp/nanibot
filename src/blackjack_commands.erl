@@ -12,6 +12,7 @@
 %% handlers
 -export([handle_deal_command/0,
          handle_hit_command/0,
+         handle_status_command/0,
          handle_stand_command/0]).
 
 %%%============================================================================
@@ -32,16 +33,20 @@ handle_event({cmd, _Bot, From, To, Cmd}, State) ->
     Tokens = nani_utils:parse_cmd(Cmd),
     Mod = blackjack_commands,
     case Tokens of
-        ["deal"] ->
+        ["bj", "deal"] ->
             H = handle_deal_command,
             MFA = {Mod, H, []},
             apply_command(From, To, MFA);
-        ["hit"] ->
+        ["bj", "hit"] ->
             H = handle_hit_command,
             MFA = {Mod, H, []},
             apply_command(From, To, MFA);
-        ["stand"] ->
+        ["bj", "stand"] ->
             H = handle_stand_command,
+            MFA = {Mod, H, []},
+            apply_command(From, To, MFA);
+        ["bj", "status"] ->
+            H = handle_status_command,
             MFA = {Mod, H, []},
             apply_command(From, To, MFA);
         _ -> ok
@@ -68,21 +73,32 @@ apply_command(From, To, {M, F, A}) ->
         {ok, Str} -> 
             nani_bot:say(To, [From, ": ", Str]);
         Err -> 
-            Msg = io_lib:format("~p", [Err]),
+            Msg = io_lib:format("~w", [Err]),
             nani_bot:say(To, [From, ": ", Msg])
     end.
 
 handle_deal_command() ->
     Res = blackjack:deal(frotz),
-    Msg = io_lib:format("~p", [Res]),
-    {ok, Msg}.
+    format_result(Res).
 
 handle_hit_command() ->
     Res = blackjack:hit(frotz),
-    Msg = io_lib:format("~p", [Res]),
-    {ok, Msg}.
+    format_result(Res).
+
+handle_status_command() ->
+    Res = blackjack:status(),
+    format_result(Res).
 
 handle_stand_command() ->
     Res = blackjack:stand(frotz),
-    Msg = io_lib:format("~p", [Res]),
-    {ok, Msg}.
+    format_result(Res).
+ 
+format_result({State, {player, PlayerScore, PlayerCards}, {house, HouseScore, HouseCards}}) ->
+   PlayerCardStr = string:join([deck:format_card(X) || X <- PlayerCards], " "),
+    HouseCardStr = string:join([deck:format_card(X) || X <- HouseCards], " "),
+    Args = [State, PlayerScore, PlayerCardStr, HouseScore, HouseCardStr],
+    Msg = io_lib:format("[~p] player ~p (~s), house ~p (~s)", Args),
+    {ok, Msg};
+ 
+format_result(Thing) ->
+    {ok, io_lib:format("~p", [Thing])}.

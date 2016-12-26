@@ -56,7 +56,8 @@ handle_event({cmd, _Bot, From, To, Cmd}, State) ->
         ["roll", NumDice, NumSides] ->
             H = handle_roll_command,
             MFA = {Mod, H, [NumDice, NumSides]},
-            apply_command(From, To, MFA)
+            apply_command(From, To, MFA);
+        _ -> ok
     end,
     {ok, State};
 

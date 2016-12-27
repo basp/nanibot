@@ -93,12 +93,14 @@ standby({call, From}, {deal, _Who}, Data) ->
     House = [Hcard1],
     PlayerScore = score(Player),
     HouseScore = score(House),
+    PlayerInfo = {player, PlayerScore, Player},
+    HouseInfo = {house, HouseScore, House},
     case PlayerScore of
         21 -> 
-            Reply = {player_won, {player, PlayerScore, Player}, {house, HouseScore, House}},
+            Reply = {player_won, PlayerInfo, HouseInfo},
             {keep_state_and_data, [{reply, From, Reply}]};
         _ ->
-            Reply = {ok, {player, PlayerScore, Player}, {house, HouseScore, House}},
+            Reply = {ok, PlayerInfo, HouseInfo},
             NewData = Data#state{deck = Deck3, player = Player, house = House},
             {next_state, player_turn, NewData, [{reply, From, Reply}]}
     end;
@@ -123,14 +125,16 @@ player_turn({call, From}, {stand, _Who}, Data) ->
     House = lists:reverse(TempHouse),
     NewData = Data#state{deck = Deck1, house = House},
     HouseScore = score(House),
+    PlayerInfo = {player, PlayerScore, Player},
+    HouseInfo = {house, HouseScore, House},
     Reply = case {PlayerScore, HouseScore} of
         {N, N} -> 
             % It's a draw, we'll decide on `house_won` just because
-            {house_won, {player, PlayerScore, Player}, {house, HouseScore, House}};
+            {house_won, PlayerInfo, HouseInfo};
         {X, Y} when X < Y andalso Y =< 21 ->
-            {house_won, {player, PlayerScore, Player}, {house, HouseScore, House}};
+            {house_won, PlayerInfo, HouseInfo};
         _ -> 
-            {player_won, {player, PlayerScore, Player}, {house, HouseScore, House}}
+            {player_won, PlayerInfo, HouseInfo}
     end,
     {next_state, standby, NewData, [{reply, From, Reply}]};
 
@@ -141,15 +145,17 @@ player_turn({call, From}, {hit, _Who}, Data) ->
     PlayerScore = score(Player),
     HouseScore = score(House),
     NewData = Data#state{deck = Deck1, player = Player},
+    PlayerInfo = {player, PlayerScore, Player},
+    HouseInfo = {house, HouseScore, House},
     case PlayerScore of
         21 -> 
-            Reply = {player_won, {player, PlayerScore, Player}, {house, HouseScore, House}},
+            Reply = {player_won, PlayerInfo, HouseInfo},
             {next_state, standby, NewData, [{reply, From, Reply}]};
         N when N > 21 -> 
-            Reply = {house_won, {player, PlayerScore, Player}, {house, HouseScore, House}},
+            Reply = {house_won, PlayerInfo, HouseInfo},
             {next_state, standby, NewData, [{reply, From, Reply}]};
         _ ->
-            Reply = {ok, {player, PlayerScore, Player}, {house, HouseScore, House}},
+            Reply = {ok, PlayerInfo, HouseInfo},
             {keep_state, NewData, [{reply, From, Reply}]}
     end;
 

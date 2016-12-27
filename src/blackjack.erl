@@ -125,6 +125,7 @@ player_turn({call, From}, {stand, _Who}, Data) ->
     HouseScore = score(House),
     Reply = case {PlayerScore, HouseScore} of
         {N, N} -> 
+            % It's a draw, we'll decide on `house_won` just because
             {house_won, {player, PlayerScore, Player}, {house, HouseScore, House}};
         {X, Y} when X < Y andalso Y =< 21 ->
             {house_won, {player, PlayerScore, Player}, {house, HouseScore, House}};

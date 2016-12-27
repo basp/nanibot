@@ -158,7 +158,8 @@ player_turn({call, From}, status, Data) ->
     {keep_state, Data, [{reply, From, Reply}]};
 
 player_turn({call, From}, _Msg, Data) ->
-    {keep_state, Data, [{reply, From, {ok, player_turn}}]}.
+    Reply = {ok, player_turn},
+    {keep_state, Data, [{reply, From, Reply}]}.
 
 %%%============================================================================
 %%% Internal functions

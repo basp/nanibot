@@ -84,10 +84,11 @@ apply_command(From, To, {M, F, A}) ->
 
 handle_bet_command(Arg, Who) ->
     case try_parse_int(Arg) of
-        {ok, Amount} -> 
+        {ok, Amount} when Amount =< 1000 -> 
             Res = blackjack:bet(frotz, Amount),
             handle_result_credits(Who, Res),
             format_result(Res);
+        {ok, _} -> {error, maxbet};
         Err -> Err
     end.
 

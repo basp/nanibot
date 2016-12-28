@@ -14,7 +14,7 @@
          handle_bet_command/1,
          handle_hit_command/0,
          handle_status_command/0,
-         handle_stand_command/0]).
+         handle_stand_command/1]).
 
 %%%============================================================================
 %%% API
@@ -48,7 +48,7 @@ handle_event({cmd, _Bot, From, To, Cmd}, State) ->
             apply_command(From, To, MFA);
         ["bj", "stand"] ->
             H = handle_stand_command,
-            MFA = {Mod, H, []},
+            MFA = {Mod, H, [From]},
             apply_command(From, To, MFA);
         ["bj", "status"] ->
             H = handle_status_command,
@@ -102,11 +102,13 @@ handle_status_command() ->
     Res = blackjack:status(),
     format_result(Res).
 
-handle_stand_command() ->
+handle_stand_command(Who) ->
     Res = blackjack:stand(frotz),
     case Res of 
-        {player_won, {player, _, _, _Bet}, _} -> ok;
-        {house_won, {player, _, _, _Bet}, _} -> ok
+        {player_won, {player, _, _, Bet}, _} -> 
+            credits_server:deposit(Who, Bet);
+        {house_won, {player, _, _, Bet}, _} ->
+            credits_server:withdraw(Who, Bet)
     end,
     format_result(Res).
  

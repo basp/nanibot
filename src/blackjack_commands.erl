@@ -10,9 +10,9 @@
          terminate/2, code_change/3]).
 
 %% handlers
--export([handle_deal_command/0,
-         handle_bet_command/1,
-         handle_hit_command/0,
+-export([handle_deal_command/1,
+         handle_bet_command/2,
+         handle_hit_command/1,
          handle_status_command/0,
          handle_credits_command/1,
          handle_stand_command/1]).
@@ -34,19 +34,18 @@ init([]) -> {ok, []}.
 handle_event({cmd, _Bot, From, To, Cmd}, State) ->
     Tokens = nani_utils:parse_cmd(Cmd),
     Mod = blackjack_commands,
-    io:format("~p~n", [Tokens]),
     case Tokens of
         ["bj", "bet", Arg] ->
             H = handle_bet_command,
-            MFA = {Mod, H, [Arg]},
+            MFA = {Mod, H, [Arg, From]},
             apply_command(From, To, MFA);
         ["bj", "deal"] ->
             H = handle_deal_command,
-            MFA = {Mod, H, []},
+            MFA = {Mod, H, [From]},
             apply_command(From, To, MFA);
         ["bj", "hit"] ->
             H = handle_hit_command,
-            MFA = {Mod, H, []},
+            MFA = {Mod, H, [From]},
             apply_command(From, To, MFA);
         ["bj", "stand"] ->
             H = handle_stand_command,
@@ -88,20 +87,41 @@ apply_command(From, To, {M, F, A}) ->
             nani_bot:say(To, [From, ": ", Msg])
     end.
 
-handle_bet_command(Arg) ->
+handle_bet_command(Arg, Who) ->
     case try_parse_int(Arg) of
         {ok, Amount} -> 
             Res = blackjack:bet(frotz, Amount),
+            case Res of 
+                {player_won, {player, _, _, Bet}, _} -> 
+                    credits_server:deposit(Who, Bet);
+                {house_won, {player, _, _, Bet}, _} ->
+                    credits_server:withdraw(Who, Bet);
+                _ -> ok
+            end,
             format_result(Res);
         Err -> Err
     end.
 
-handle_deal_command() ->
+handle_deal_command(Who) ->
     Res = blackjack:deal(frotz),
+    case Res of 
+        {player_won, {player, _, _, Bet}, _} -> 
+            credits_server:deposit(Who, Bet);
+        {house_won, {player, _, _, Bet}, _} ->
+            credits_server:withdraw(Who, Bet);
+        _ -> ok
+    end,
     format_result(Res).
 
-handle_hit_command() ->
+handle_hit_command(Who) ->
     Res = blackjack:hit(frotz),
+    case Res of 
+        {player_won, {player, _, _, Bet}, _} -> 
+            credits_server:deposit(Who, Bet);
+        {house_won, {player, _, _, Bet}, _} ->
+            credits_server:withdraw(Who, Bet);
+        _ -> ok
+    end,
     format_result(Res).
 
 handle_status_command() ->
@@ -119,7 +139,8 @@ handle_stand_command(Who) ->
         {player_won, {player, _, _, Bet}, _} -> 
             credits_server:deposit(Who, Bet);
         {house_won, {player, _, _, Bet}, _} ->
-            credits_server:withdraw(Who, Bet)
+            credits_server:withdraw(Who, Bet);
+        _ -> ok
     end,
     format_result(Res).
  

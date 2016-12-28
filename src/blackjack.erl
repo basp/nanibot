@@ -7,6 +7,7 @@
          start_link/0,
          stop/0,
          deal/1,
+         bet/2,
          hit/1,
          stand/1,
          status/0,
@@ -24,7 +25,7 @@
          terminate/3,
          code_change/4]).
 
--record(state, {deck, player, house}).
+-record(state, {deck, player, house, bet}).
 
 name() -> blackjack.
 
@@ -46,7 +47,10 @@ status() ->
     gen_statem:call(name(), status).
 
 deal(Who) ->
-    gen_statem:call(name(), {deal, Who}).
+    gen_statem:call(name(), {bet, Who, 0}).
+
+bet(Who, Amount) ->
+    gen_statem:call(name(), {bet, Who, Amount}).
 
 hit(Who) ->
     gen_statem:call(name(), {hit, Who}).
@@ -61,7 +65,7 @@ stop() ->
 %%% gen_statem callbacks
 %%%============================================================================
 init([]) -> 
-    Data = #state{deck = [], player = [], house = []},
+    Data = #state{deck = [], player = [], house = [], bet = 0},
     {ok, standby, Data}.
 
 terminate(_Reason, _State, _Data) -> ok.
@@ -93,7 +97,7 @@ standby({call, From}, {deal, _Who}, Data) ->
     House = [Hcard1],
     PlayerScore = score(Player),
     HouseScore = score(House),
-    PlayerInfo = {player, PlayerScore, Player},
+    PlayerInfo = {player, PlayerScore, Player, 0},
     HouseInfo = {house, HouseScore, House},
     case PlayerScore of
         21 -> 
@@ -105,12 +109,34 @@ standby({call, From}, {deal, _Who}, Data) ->
             {next_state, player_turn, NewData, [{reply, From, Reply}]}
     end;
 
+standby({call, From}, {bet, _Who, Bet}, Data) ->
+    Deck0 = deck:shuffle(deck:french()),
+    {Pcard1, Deck1} = deck:draw(Deck0),
+    {Hcard1, Deck2} = deck:draw(Deck1),
+    {Pcard2, Deck3} = deck:draw(Deck2),
+    Player = [Pcard1, Pcard2],
+    House = [Hcard1],
+    PlayerData = {player, score(Player), Player, Bet},
+    HouseData = {house, score(House), House},
+    case PlayerData of
+        {player, 21, _Cards, Bet} -> 
+            Reply = {player_won, PlayerData, HouseData},
+            NewData = Data#state{deck = Deck3, player = Player, house = House, bet = Bet},
+            {keep_state, NewData, [{reply, From, Reply}]};
+        {player, _, _Cards, Bet} ->
+            Reply = {ok, PlayerData, HouseData},
+            NewData = Data#state{deck = Deck3, player = Player, house = House, bet = Bet},
+            {next_state, player_turn, NewData, [{reply, From, Reply}]}
+    end;
+
 standby({call, From}, status, Data) ->
-    Reply = {ok, standby},
+    Bet = Data#state.bet,
+    Reply = {ok, standby, {bet, Bet}},
     {keep_state, Data, [{reply, From, Reply}]};
 
 standby({call, From}, _Msg, Data) ->
-    Reply = {ok, standby},
+    Bet = Data#state.bet,
+    Reply = {ok, standby, {bet, Bet}},
     {keep_state, Data, [{reply, From, Reply}]}.
 
 %%%----------------------------------------------------------------------------
@@ -118,6 +144,7 @@ player_turn(cast, _Event, _Data) ->
     {keep_state_and_data, []};
 
 player_turn({call, From}, {stand, _Who}, Data) ->
+    Bet = Data#state.bet,
     Player = Data#state.player,
     PlayerScore = score(Player),
     Deck = Data#state.deck,
@@ -125,7 +152,7 @@ player_turn({call, From}, {stand, _Who}, Data) ->
     House = lists:reverse(TempHouse),
     NewData = Data#state{deck = Deck1, house = House},
     HouseScore = score(House),
-    PlayerInfo = {player, PlayerScore, Player},
+    PlayerInfo = {player, PlayerScore, Player, Bet},
     HouseInfo = {house, HouseScore, House},
     Reply = case {PlayerScore, HouseScore} of
         {N, N} -> 
@@ -139,13 +166,14 @@ player_turn({call, From}, {stand, _Who}, Data) ->
     {next_state, standby, NewData, [{reply, From, Reply}]};
 
 player_turn({call, From}, {hit, _Who}, Data) ->
+    Bet = Data#state.bet,
     {Pcard, Deck1} = deck:draw(Data#state.deck),
     Player = Data#state.player ++ [Pcard],
     House = lists:reverse(Data#state.house),
     PlayerScore = score(Player),
     HouseScore = score(House),
     NewData = Data#state{deck = Deck1, player = Player},
-    PlayerInfo = {player, PlayerScore, Player},
+    PlayerInfo = {player, PlayerScore, Player, Bet},
     HouseInfo = {house, HouseScore, House},
     case PlayerScore of
         21 -> 
@@ -160,11 +188,13 @@ player_turn({call, From}, {hit, _Who}, Data) ->
     end;
 
 player_turn({call, From}, status, Data) ->
-    Reply = {ok, player_turn},
+    Bet = Data#state.bet,
+    Reply = {ok, player_turn, {bet, Bet}},
     {keep_state, Data, [{reply, From, Reply}]};
 
 player_turn({call, From}, _Msg, Data) ->
-    Reply = {ok, player_turn},
+    Bet = Data#state.bet,
+    Reply = {ok, player_turn, {bet, Bet}},
     {keep_state, Data, [{reply, From, Reply}]}.
 
 %%%============================================================================

@@ -109,7 +109,7 @@ handle_status_command() ->
     format_result(Res).
 
 handle_credits_command(Who) ->
-    {_, Credits} = Res = credits_server:status(Who),
+    {_, Credits} = credits_server:status(Who),
     Msg = io_lib:format("~p", [Credits]),
     {ok, Msg}.
 

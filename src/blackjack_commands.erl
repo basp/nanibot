@@ -34,6 +34,7 @@ init([]) -> {ok, []}.
 handle_event({cmd, _Bot, From, To, Cmd}, State) ->
     Tokens = nani_utils:parse_cmd(Cmd),
     Mod = blackjack_commands,
+    io:format("~p~n", [Tokens]),
     case Tokens of
         ["bj", "bet", Arg] ->
             H = handle_bet_command,
@@ -55,7 +56,7 @@ handle_event({cmd, _Bot, From, To, Cmd}, State) ->
             H = handle_status_command,
             MFA = {Mod, H, []},
             apply_command(From, To, MFA);
-        ["bj" "credits"] ->
+        ["bj", "credits"] ->
             H = handle_credits_command,
             MFA = {Mod, H, [From]},
             apply_command(From, To, MFA);
@@ -108,8 +109,9 @@ handle_status_command() ->
     format_result(Res).
 
 handle_credits_command(Who) ->
-    Res = credits_server:status(Who),
-    {ok, io_lib:format("~p", [Res])}.
+    {_, Credits} = Res = credits_server:status(Who),
+    Msg = io_lib:format("~p", [Credits]),
+    {ok, Msg}.
 
 handle_stand_command(Who) ->
     Res = blackjack:stand(frotz),

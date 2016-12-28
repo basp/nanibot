@@ -123,17 +123,15 @@ handle_result_credits(Who, Res) ->
 format_result(Res = {State, {player, PlayerScore, PlayerCards, Bet}, {house, HouseScore, HouseCards}}) ->
     PlayerCardStr = string:join([deck:format_card(X) || X <- PlayerCards], " "),
     HouseCardStr = string:join([deck:format_card(X) || X <- HouseCards], " "),
+    Args = [PlayerScore, PlayerCardStr, HouseScore, HouseCardStr, Bet],
     case State of
         house_won -> 
-            Args = [PlayerScore, PlayerCardStr, HouseScore, HouseCardStr, Bet],
             Msg = io_lib:format("Dealer wins! Player ~p (~s), dealer ~p (~s) (lost ~p credits)", Args),
             {ok, Msg};
         player_won ->
-            Args = [PlayerScore, PlayerCardStr, HouseScore, HouseCardStr, Bet],
             Msg = io_lib:format("Player wins! Player ~p (~s), dealer ~p (~s) (gained ~p credits)", Args),
             {ok, Msg};    
         ok -> 
-            Args = [PlayerScore, PlayerCardStr, HouseScore, HouseCardStr, Bet],
             Msg = io_lib:format("Player ~p (~s), dealer ~p (~s) (current bet is ~p credits)", Args),
             {ok, Msg};
         _  -> 

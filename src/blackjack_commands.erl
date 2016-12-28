@@ -91,41 +91,24 @@ handle_bet_command(Arg, Who) ->
     case try_parse_int(Arg) of
         {ok, Amount} -> 
             Res = blackjack:bet(frotz, Amount),
-            case Res of 
-                {player_won, {player, _, _, Bet}, _} -> 
-                    credits_server:deposit(Who, Bet);
-                {house_won, {player, _, _, Bet}, _} ->
-                    credits_server:withdraw(Who, Bet);
-                _ -> ok
-            end,
+            handle_result_credits(Who, Res),
             format_result(Res);
         Err -> Err
     end.
 
 handle_deal_command(Who) ->
     Res = blackjack:deal(frotz),
-    case Res of 
-        {player_won, {player, _, _, Bet}, _} -> 
-            credits_server:deposit(Who, Bet);
-        {house_won, {player, _, _, Bet}, _} ->
-            credits_server:withdraw(Who, Bet);
-        _ -> ok
-    end,
+    handle_result_credits(Who, Res),
     format_result(Res).
 
 handle_hit_command(Who) ->
     Res = blackjack:hit(frotz),
-    case Res of 
-        {player_won, {player, _, _, Bet}, _} -> 
-            credits_server:deposit(Who, Bet);
-        {house_won, {player, _, _, Bet}, _} ->
-            credits_server:withdraw(Who, Bet);
-        _ -> ok
-    end,
+    handle_result_credits(Who, Res),
     format_result(Res).
 
-handle_status_command() ->
-    Res = blackjack:status(),
+handle_stand_command(Who) ->
+    Res = blackjack:stand(frotz),
+    handle_result_credits(Who, Res),
     format_result(Res).
 
 handle_credits_command(Who) ->
@@ -133,17 +116,19 @@ handle_credits_command(Who) ->
     Msg = io_lib:format("~p", [Credits]),
     {ok, Msg}.
 
-handle_stand_command(Who) ->
-    Res = blackjack:stand(frotz),
+handle_status_command() ->
+    Res = blackjack:status(),
+    format_result(Res).
+ 
+handle_result_credits(Who, Res) ->
     case Res of 
         {player_won, {player, _, _, Bet}, _} -> 
             credits_server:deposit(Who, Bet);
         {house_won, {player, _, _, Bet}, _} ->
             credits_server:withdraw(Who, Bet);
         _ -> ok
-    end,
-    format_result(Res).
- 
+    end.
+
 format_result(Res = {State, {player, PlayerScore, PlayerCards, Bet}, {house, HouseScore, HouseCards}}) ->
     PlayerCardStr = string:join([deck:format_card(X) || X <- PlayerCards], " "),
     HouseCardStr = string:join([deck:format_card(X) || X <- HouseCards], " "),

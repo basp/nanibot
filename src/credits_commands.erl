@@ -34,6 +34,14 @@ handle_event({cmd, _Bot, From, To, Cmd}, State) ->
             H = handle_credits_command,
             MFA = {Mod, H, [From]},
             apply_command(From, To, MFA);
+        ["cr"] ->
+            H = handle_credits_command,
+            MFA = {Mod, H, [From]},
+            apply_command(From, To, MFA);
+        ["cr", "status"] -> 
+            H = handle_credits_command,
+            MFA = {Mod, H, [From]},
+            apply_command(From, To, MFA);
         _ -> ok
     end,
     {ok, State};

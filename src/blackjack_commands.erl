@@ -14,7 +14,6 @@
          handle_bet_command/2,
          handle_hit_command/1,
          handle_status_command/0,
-         handle_credits_command/1,
          handle_stand_command/1]).
 
 %%%============================================================================
@@ -54,10 +53,6 @@ handle_event({cmd, _Bot, From, To, Cmd}, State) ->
         ["bj", "status"] ->
             H = handle_status_command,
             MFA = {Mod, H, []},
-            apply_command(From, To, MFA);
-        ["bj", "credits"] ->
-            H = handle_credits_command,
-            MFA = {Mod, H, [From]},
             apply_command(From, To, MFA);
         _ -> ok
     end,
@@ -110,11 +105,6 @@ handle_stand_command(Who) ->
     Res = blackjack:stand(frotz),
     handle_result_credits(Who, Res),
     format_result(Res).
-
-handle_credits_command(Who) ->
-    {_, Credits} = credits_server:status(Who),
-    Msg = io_lib:format("~p", [Credits]),
-    {ok, Msg}.
 
 handle_status_command() ->
     Res = blackjack:status(),

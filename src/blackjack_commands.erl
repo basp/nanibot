@@ -116,12 +116,16 @@ format_result(Res = {State, {player, PlayerScore, PlayerCards, Bet}, {house, Hou
     case State of
         house_won -> 
             Args = [PlayerScore, PlayerCardStr, HouseScore, HouseCardStr, Bet],
-            Msg = io_lib:format("Dealer wins! player ~p (~s), house ~p (~s) (lost ~p credits)", Args),
+            Msg = io_lib:format("Dealer wins! Player ~p (~s), dealer ~p (~s) (lost ~p credits)", Args),
             {ok, Msg};
         player_won ->
             Args = [PlayerScore, PlayerCardStr, HouseScore, HouseCardStr, Bet],
-            Msg = io_lib:format("Player wins! player ~p (~s), house ~p (~s) (gained ~p credits)", Args),
+            Msg = io_lib:format("Player wins! Player ~p (~s), dealer ~p (~s) (gained ~p credits)", Args),
             {ok, Msg};    
+        ok -> 
+            Args = [PlayerScore, PlayerCardStr, HouseScore, HouseCardStr, Bet],
+            Msg = io_lib:format("Player ~p (~s), dealer ~p (~s) (current bet is ~p credits)", Args),
+            {ok, Msg};
         _  -> 
             {error, Res}
     end;

@@ -10,3 +10,4 @@ rel/example_project
 .vscode
 **/*.tab
 ebin/nanibot.app
+stories

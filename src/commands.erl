@@ -3,7 +3,7 @@
 -behavior(gen_event).
 
 %% API
--export([add_handler/0, delete_handler/0]).
+-export([fib/1, add_handler/0, delete_handler/0]).
 
 %% gen_event callbacks
 -export([init/1, handle_event/2, handle_call/2, handle_info/2, 
@@ -109,7 +109,7 @@ handle_roll_command(Arg1, Arg2) ->
 
 handle_fib_command(Arg) ->
     case try_parse_int(Arg) of
-        {ok, Int} when Int < 100 -> F = fib(Int), {ok, io_lib:format("~p", [F])};
+        {ok, Int} when Int < 25 -> F = fib(Int), {ok, io_lib:format("~p", [F])};
         {ok, _Int} -> {error, floodgate};
         Err -> Err
     end.
@@ -156,6 +156,8 @@ try_parse_int(Str) ->
 fac(0) -> 1;
 fac(N) -> N * fac(N - 1).
 
-fib(0) -> 1;
-fib(1) -> 1;
-fib(N) -> fib(N - 2) + fib(N - 1).
+fib(N) -> [fib_val(X) || X <- lists:seq(0, N)].
+
+fib_val(0) -> 1;
+fib_val(1) -> 1;
+fib_val(N) -> fib_val(N - 1) + fib_val(N - 2).

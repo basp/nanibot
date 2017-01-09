@@ -64,5 +64,12 @@ connection. In other words, Erlang will happily pump pages of digits to your
 IRC connection if you don't put in a *floodgate* yourself (some examples of
 these are also in `commands.erl`).
 
+## format strings
+If you wanna convert a number to binary use `!fmt ~.2b 12345`, if you want to
+convert a number to hex use `!fmt ~.16b 12345` etc.
+
+If you want to read a number from binary user `!fread ~2u 1010`, if you want to 
+read a number from hex use `!fread ~16u DEADBEEF` etc.
+
 # events
 TODO: Document all the standard events.

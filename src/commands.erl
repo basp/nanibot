@@ -109,7 +109,7 @@ handle_roll_command(Arg1, Arg2) ->
 
 handle_fib_command(Arg) ->
     case try_parse_int(Arg) of
-        {ok, Int} when Int < 25 -> F = fib(Int), {ok, io_lib:format("~p", [F])};
+        {ok, Int} when Int < 25 -> F = fib(Int), {ok, io_lib:format("~w", [F])};
         {ok, _Int} -> {error, floodgate};
         Err -> Err
     end.

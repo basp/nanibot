@@ -11,6 +11,7 @@
 
 %% handlers
 -export([handle_fac_command/1,
+         handle_fib_command/1,
          handle_roll_command/2,
          handle_fmt_command/2,
          handle_fread_command/2]).
@@ -35,6 +36,10 @@ handle_event({cmd, _Bot, From, To, Cmd}, State) ->
     case Tokens of
         ["fac", Arg] -> 
             H = handle_fac_command,
+            MFA = {Mod, H, [Arg]},
+            apply_command(From, To, MFA);
+        ["fib", Arg] ->
+            H = handle_fib_command,
             MFA = {Mod, H, [Arg]},
             apply_command(From, To, MFA);
         ["fmt", Fmt, Arg] ->
@@ -102,6 +107,13 @@ handle_roll_command(Arg1, Arg2) ->
         Err -> Err
     end. 
 
+handle_fib_command(Arg) ->
+    case try_parse_int(Arg) of
+        {ok, Int} when Int < 100 -> F = fib(Int), {ok, io_lib:format("~p", [F])};
+        {ok, _Int} -> {error, floodgate};
+        Err -> Err
+    end.
+
 handle_fac_command(Arg) ->
     case try_parse_int(Arg) of
         {ok, Int} when Int < 101 -> F = fac(Int), {ok, integer_to_list(F)};
@@ -143,3 +155,7 @@ try_parse_int(Str) ->
 
 fac(0) -> 1;
 fac(N) -> N * fac(N - 1).
+
+fib(0) -> 1;
+fib(1) -> 1;
+fib(N) -> fib(N - 2) + fib(N - 1).

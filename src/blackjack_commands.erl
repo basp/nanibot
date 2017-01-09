@@ -139,7 +139,7 @@ format_result(Res = {State, {player, PlayerScore, PlayerCards, Bet}, {house, Hou
     end;
  
 format_result(Thing) ->
-    {ok, io_lib:format("~p", [Thing])}.
+    {ok, io_lib:format("~w", [Thing])}.
 
 try_parse_int(Str) ->
     try list_to_integer(Str) of

@@ -3,13 +3,28 @@
 -behaviour(gen_statem).
 
 %% API
--export([start/1, connect/0, stop/0, send/1, join/1, say/2, emote/2, speak/2]).
+-export([start/1, 
+         start_link/1,
+         stop/0,
+         connect/0,  
+         join/1,
+         part/1,
+         send/1, 
+         say/2, 
+         emote/2]).
 
 %% state functions
--export([standby/3, connecting/3, registering/3, ready/3]).
+-export([standby/3, 
+         connecting/3, 
+         registering/3, 
+         ready/3]).
 
 %% gen_statem callbacks
--export([init/1, callback_mode/0, handle_event/4, terminate/3, code_change/4]).
+-export([init/1, 
+         callback_mode/0, 
+         handle_event/4, 
+         terminate/3, 
+         code_change/4]).
 
 -define(RPL_WELCOME,        "001").
 -define(RPL_YOURHOST,       "002").
@@ -22,7 +37,7 @@
 
 -define(REAL_NAME, "http://github.com/basp/nanibot").
 
--record(state, {nick, host, port, conn}).
+-record(state, {nick, host, port, conn, alts}).
 
 name() -> nani_bot.
 real_name() -> ?REAL_NAME.
@@ -33,6 +48,9 @@ real_name() -> ?REAL_NAME.
 start(Config) -> 
     gen_statem:start({local, name()}, ?MODULE, Config, []).
 
+start_link(Config) ->
+    gen_statem:start_link({local, name()}, ?MODULE, Config, []).
+
 connect() -> 
     gen_statem:cast(name(), connect).
 
@@ -40,10 +58,9 @@ join(Channel) ->
     Msg = ["JOIN ", Channel],
     gen_statem:cast(name(), {send, Msg}).
 
-speak(To, Count) ->
-    Tokens = markov_server:generate(Count),
-    Text = string:join(Tokens, " "),
-    say(To, Text).
+part(Channel) ->
+    Msg = ["PART", Channel],
+    gen_statem:cast(name(), {send, Msg}).
 
 say(To, Text) ->
     Msg = ["PRIVMSG ", To, " :", Text],
@@ -66,15 +83,16 @@ init(Config) ->
     Nick = proplists:get_value(nick, Config),
     Host = proplists:get_value(host, Config),
     Port = proplists:get_value(port, Config),
-    Data = #state{nick = Nick, host = Host, port = Port},
+    Alts = proplists:get_value(alts, Config),
+    Data = #state{nick = Nick, host = Host, port = Port, alts = Alts},
     {ok, standby, Data}.
 
 terminate(_Reason, _State, _Data) -> ok.
 
-code_change(_OldVsn, State, Data, _Extra) ->
+code_change(_OldVsn, State, Data, _Extra) -> 
     {ok, State, Data}.
 
-handle_event(_EventType, _EventContent, _State, _Data) ->
+handle_event(_EventType, _EventContent, _State, _Data) -> 
     {keep_state_and_data, []}.
 
 callback_mode() -> state_functions.
@@ -131,26 +149,39 @@ ready(internal, {ping, Ping}, Data) ->
     send_pong(Conn, Ping),
     {keep_state_and_data, []};
 
-ready(internal, {join, Props}, _Data) ->
-    _Channel = proplists:get_value(channel, Props), 
-    _Nick = proplists:get_value(nick, Props),
+ready(internal, {join, Props}, Data) ->
+    Bot = {Data#state.nick, Data#state.alts},
+    Channel = proplists:get_value(channel, Props), 
+    User = proplists:get_value(user, Props),
+    nani_event:join(Bot, Channel, User),
     {keep_state_and_data, []};
 
-ready(internal, {part, _Props}, _Data) ->
+ready(internal, {part, Props}, Data) ->
+    Bot = {Data#state.nick, Data#state.alts},
+    Channel = proplists:get_value(channel, Props),
+    User = proplists:get_value(user, Props),
+    nani_event:part(Bot, Channel, User),
     {keep_state_and_data, []};
 
 ready(internal, {names, Channel, Names}, Data) ->
-    Nick = Data#state.nick,
-    % send_hello(Conn, Nick, Channel, Names),
-    nani_event:names(Nick, Channel, Names),
+    Bot = {Data#state.nick, Data#state.alts},
+    nani_event:names(Bot, Channel, Names),
     {keep_state_and_data, []};
 
 ready(internal, {privmsg, Props}, Data) ->
-    Nick = Data#state.nick,
+    Bot = {Data#state.nick, Data#state.alts},
     From = proplists:get_value(from, Props),
     To = proplists:get_value(to, Props),
     Text = binary_to_list(proplists:get_value(text, Props)),
-    nani_event:privmsg(Nick, From, To, Text),
+    nani_event:privmsg(Bot, From, To, Text),
+    {keep_state_and_data, []};
+
+ready(internal, {cmd, Props}, Data) ->
+    Bot = {Data#state.nick, Data#state.alts},
+    From = proplists:get_value(from, Props),
+    To = proplists:get_value(to, Props),
+    Cmd = proplists:get_value(cmd, Props),
+    nani_event:command(Bot, From, To, Cmd),
     {keep_state_and_data, []};
 
 ready(cast, {received, Msg}, _Data) ->
@@ -163,16 +194,23 @@ ready(cast, {received, Msg}, _Data) ->
         [_, _, <<"PING">>, Ping] ->
             Actions = [{next_event, internal, {ping, Ping}}],
             {keep_state_and_data, Actions};
-        [Nick, <<"JOIN">>, Channel] ->
-            Props = [{nick, Nick}, {channel, Channel}],
+        [User, <<"JOIN">>, Channel] ->
+            Props = [{user, binary_to_list(User)}, {channel, Channel}],
             Actions = [{next_event, internal, {join, Props}}],
+            {keep_state_and_data, Actions};
+        [User, <<"PART">>, Channel] ->
+            Props = [{user, binary_to_list(User)}, {channel, Channel}],
+            Actions = [{next_event, internal, {part, Props}}],
+            {keep_state_and_data, Actions};
+        [From, <<"PRIVMSG">>, To, <<$!, Cmd/binary>>] ->
+            Props = [{from, From}, {to, To}, {cmd, Cmd}],
+            Actions = [{next_event, internal, {cmd, Props}}],
             {keep_state_and_data, Actions};
         [From, <<"PRIVMSG">>, To, Text] ->
             Props = [{from, From}, {to, To}, {text, Text}],
             Actions = [{next_event, internal, {privmsg, Props}}],
             {keep_state_and_data, Actions};
         _ -> 
-            io:format("~p~n", [Match]),
             {keep_state_and_data, []}
     end;
 
@@ -180,6 +218,14 @@ ready(cast, {send, Msg}, Data) ->
     Conn = Data#state.conn,
     send(Conn, Msg),
     {keep_state_and_data, []};
+    
+ready({call, From}, get_nick, Data) ->
+    Actions = [{reply, From, Data#state.nick}],
+    {keep_state_and_data, Actions};
+
+ready({cast}, {set_nick, Nick}, Data) ->
+    NewData = Data#state{nick = Nick},
+    {keep_state, NewData};
 
 ready(_EventType, _EventContent, _Data) ->
     {keep_state_and_data, []}.

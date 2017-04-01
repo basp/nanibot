@@ -2,7 +2,15 @@
 
 -export([start/0, start_link/0, add_handler/2, delete_handler/2]).
 
--export([privmsg/4, names/3]).
+-export([privmsg/4, 
+         command/4,
+         names/3,
+         join/3,
+         part/3,
+         tcp_receive/1, 
+         tcp_send/1, 
+         tcp_error/1, 
+         tcp_closed/1]).
 
 -define(SERVER, ?MODULE).
 
@@ -18,8 +26,29 @@ add_handler(Handler, Args) ->
 delete_handler(Handler, Args) ->
     gen_event:delete_handler(?SERVER, Handler, Args).
 
-privmsg(Nick, From, To, Text) ->
-    gen_event:notify(?SERVER, {privmsg, Nick, From, To, Text}).
+join(Bot, Channel, User) ->
+    gen_event:notify(?SERVER, {join, Bot, Channel, User}).
 
-names(Nick, Channel, Names) ->
-    gen_event:notify(?SERVER, {names, Nick, Channel, Names}).
+part(Bot, Channel, User) ->
+    gen_event:notify(?SERVER, {part, Bot, Channel, User}).
+
+privmsg(Bot, From, To, Text) ->
+    gen_event:notify(?SERVER, {privmsg, Bot, From, To, Text}).
+
+command(Bot, From, To, Cmd) ->
+    gen_event:notify(?SERVER, {cmd, Bot, From, To, Cmd}).
+
+names(Bot, Channel, Names) ->
+    gen_event:notify(?SERVER, {names, Bot, Channel, Names}).
+
+tcp_receive(Data) ->
+    gen_event:notify(?SERVER, {tcp_receive, Data}).
+
+tcp_send(Data) ->
+    gen_event:notify(?SERVER, {tcp_send, Data}).
+
+tcp_error(Reason) ->
+    gen_event:notify(?SERVER, {tcp_error, Reason}).
+
+tcp_closed(Socket) ->
+    gen_event:notify(?SERVER, {tcp_closed, Socket}).

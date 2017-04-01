@@ -1,135 +1,75 @@
 # nanibot
-Erlang IRC bot.
+An Erlang IRC bot wrapped up as an OTP application.
 
-## goal
-> Nanibot was created with the explicit goal of modifying and growing the
-> bot *while* it is running. I was happy working in Node-land and enjoying
-> the `npm` ecosystem but it was frustrating seeing the bot err (or just make
-> silly responses) and having to take it offline to do basic fixes.
->
-> I looked into implementing a script language for it or even hot-loading
-> for Node and although both are possible they didn't feel like the right 
-> path to take. I felt like Erlang might be a good fit but after looking 
-> into the ecosystem I felt a bit dishearted. To be honest, none of it was 
-> to my liking so that meant I had to write the whole thing from scratch
-> including a basic IRC client and markov library.
->
-> Still, the thought of having hot-load capability and the other benefits
-> (first class processes, functional programming, dynamic typing, OTP) 
-> really convinced me to give it a try anyway. The result is Nanibot and
-> so far I'm pleased on how things are falling together.
+# overview
+Nanibot is at heart a state machine implemented as a `gen_statem` behaviour in
+the `nani_bot` module. This will parse incoming IRC messages and emit events 
+via `nani_event` depending on which state it is in. All interesting stuff is 
+mostly implemented via `gen_event` handlers listening to the events emitted 
+by `nani_event` or processes involved with or directly manipulating the 
+`nani_bot` process itself.
 
-## overview
-Nanibot is library but it also claims to be a bot, by virtue
-of all the little pieces that are included. By design, the aim has always
-been to be a library and definitely not a framework. As such it can
-hopefully be useful in a variety of scenarios.
+The `nani_bot` process is (for now) the main client API to the bot. It allows 
+for some basic utility commands such as `say`, `emote`, `join` and `part` but
+also allows you to send any IRC command directly using the `send` API.
 
-> Nanibot is *wannabe* OTP. It uses a lot of OTP stuff but the top level 
-> is still unsupervised (except from the `markov_server` but more on that 
-> later). 
->
-> The main reason for this is that it was unclear on how the plugins (real 
-> functionality) would be implemented. Now that `gen_event` came out on top 
-> we should have a pretty stable surface layer.
-> 
-> We will be full OTP at some point though, that has always been the goal.
+Note that the `nani_conn` process that manages the socket is currently directly 
+linked to the `nani_bot` process.
 
-### nani
-The `nani` modules are part of the core bot. When considering only those
-modules even *bot* is an overstatement. Frankly it's a pretty basic Erlang
-IRC client. The core of the bot is implemented in `nani_bot` as a `gen_statem`
-behavior. Its basic job is to listen to the IRC socket and emit events
-via the `nani_event` event emitter. Clients in the form of event handlers
-and other processes using the bot can use the `nani_bot` interface to
-interact with the underlying IRC connection in both high and reasonably
-low level ways. 
+# setup
+Check the `nanibot.app` file and make sure the `host`, `port` and `nick` config
+is correct. Startup the application:
 
-TODO: The `nani_utils` module contains some helper functions which 
-might not even be used anymore.
+    application:start(nanibot).
 
-> The bot process should never ever crash. Nor should the *memory* or
-> `markov_server`. At this point the only way to implement actual 
-> functionality should be by listening to events emitted by `nani_event`.
-> Those handlers should never ever crash or kill the bot unintendedly.
+It's recommended to add the `nani_logger` handler so you can see what the bot
+is doing while you connect. This will use `sasl` so we'll startup that first:
 
-### markov
-The `markov` modules are part of the markov-chain generation service.
-This is a server that can generate random text and also *learn* on the fly.
-You can dynamically *seed* it using any of the `seed` methods and it will
-incorporate that text into its vocabulary. It uses ETS memory backed
-tables as the default storage mechanism and as such is quite fast but your
-bot might suffer from *amnesia* if the `markov_server` process dies.
+    application:start(sasl).
 
-Note that it would be trivial to use disk based tables but there is really
-no need. The bot is pretty idempotent (and functional) in that when you seed
-it with exactly the same data, you get exactly the same behavior (barring
-any funky handlers you have registered of course but even they should not
-be terribly hampared by a total failure of bot memory if you design them 
-well). In other words - if you log the IRC data you can always bring the 
-bot back to where it was (again, barring any funky stuff).
+And then add the handler:
 
-And else, you can just use ETS disk-based tables which is a trivial
-change to implement in `markov_server` if you really need them (you don't).
+    nani_logger:add_handler().
 
-> Nowadays the bot doesn't even care about the `markov_server` anymore 
-> but at some point it really *depended* on it and would crash without
-> it being available. That explains why currently it still is the only
-> service with an actual proper supervisor (`markov_sup`) process.
+We then connect according to the settings in the `nanibot.app` file:
 
-The `markov` module is just a bunch of methods that combine nicely in order
-to do procedural generation of tokens based on *ngrams*. It should be quite 
-useful on it's own outside the `markov_server` process which uses it to 
-generate responses. Note that the `markov` module is a pure functional
-module. All persistence is handled by the `markov_server` and its internal ETS tables.
+    nani_bot:connect().
 
-## getting started
-### the erlang shell
-The instructions below assume you are running an Erlang shell. If you're 
-unsure how to do this on your system please checkout [the official site](https://www.erlang.org).
+After you connected you can issue commands to the bot:
 
-Once you have an Erlang shell up and running we can continue.
+    nani_bot:join("##somechannel").
+    nani_bot:say("Hi all!").
+    nani_bot:emote("pets something").
 
-### compiling
-There's no Rebar or something yet so we have to do this the clunky way (sorry). 
+Or attach `gen_event` handlers to respond to IRC messages that the bot 
+receives.
 
-Once in your Erlang shell:
-```
-> cd("./dir/where/nani/is/installed/src").
-```
+# commands
+Nani can recognizes a command when a message is prefixed with a *bang* (`!`) 
+character, for example:
 
-After that we compile the bot modules:
-```
-> lc([nani_utils, nani_conn, nani_event, nani_bot]).
-```
+    !frotz quux baz
 
-This will allow you to run the bot with `nani_bot:start(Config)` (no 
-worries, `Config` is explained later) but you probably want a bit 
-more bits and pieces like for example the markov service:
-```
-> lc([markov, markov_server]).
-```
+Would be a (hypothetical) command `frotz` with arguments `quux` and `baz`.
 
-You can start this one with `markov_server:start()` but don't forget 
-to seed it as well. There's various ways to do this. Those are described
-below or you can just check module info with `m(markov_server)` as the 
-`seed` methods are very straightforward.
+Commands are implemented as standard `gen_event` handlers listening to events
+emitted by `nani_event` so they work the same as any other handler. Command
+handlers just listen for the `cmd` event and use the information supplied to
+see if they can run a known command. For an example, take a look at 
+`commands.erl` which has a few basic commands implemented.
 
-Finally, you might want the *plugins* which are just `gen_event` handlers:
-```
-> lc([greeter, markov_respond]).
-```
+One note of warning, when implementing handlers of any kind, be aware that the
+capabilities of the Erlang VM probably vastly overshadow that of the IRC
+connection. In other words, Erlang will happily pump pages of digits to your 
+IRC connection if you don't put in a *floodgate* yourself (some examples of
+these are also in `commands.erl`).
 
-All stuff is explained in more detail below but hopefully at least now
-you can make a little bit of sense of the included modules, their importance
-and where they fit into the big picture. Next, we'll look into actually
-running the bot.
+## format strings
+If you wanna convert a number to binary use `!fmt ~.2b 12345`, if you want to
+convert a number to hex use `!fmt ~.16b 12345` etc.
 
-### starting
-We need some `Config` such as:
-```
-> Config = [{host, "irc.freenode.net"}, {port, 6667}, {nick, "YourBotNick"}].
-```
+If you want to read a number from binary user `!fread ~2u 1010`, if you want to 
+read a number from hex use `!fread ~16u DEADBEEF` etc.
 
 So we know how to connect to the IRC network. Note that you might have to register 
 your bot (nick) first. This mostly depends on the network you're trying to connect
@@ -483,3 +423,6 @@ Usually you want to restart the bot application:
         application:start(nanibot).
 
 Keep in mind that you *will* have to add any handlers that you want to use. Most likely at least the `greeter` and `markov_respond`. The latter is found in the `nanikov` application directory.
+
+# events
+TODO: Document all the standard events.

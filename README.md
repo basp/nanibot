@@ -469,9 +469,7 @@ retrieve(Key :: ngram()) -> Candidates :: [token()].
 ```
 
 ## maintanance
-Don't panic!
-
-If you execute `ps -aux` you will see a list of all processes. Increase your shell size and look for some program that has a invocation that contains `nani@zookeepers`. This is the Erlang process hosting the bot.
+If you execute `ps -aux` you will see a list of all processes. Increase your shell size and look for some program that has a invocation that contains `botname@yourhost`. This is the Erlang process hosting the bot.
 
 We can connect to this bot as follows:
 

@@ -1,0 +1,9 @@
+lc([
+    markov, 
+    markov_server, 
+    markov_respond, 
+    nani_bot, 
+    nani_conn, 
+    nani_event, 
+    nani_utils
+]).

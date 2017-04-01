@@ -467,3 +467,21 @@ functions. Below is the required interface for any `memory` substitute.
 remember(Key :: ngram(), Candidate :: token()) -> ignored.
 retrieve(Key :: ngram()) -> Candidates :: [token()]. 
 ```
+
+## maintanance
+Don't panic!
+
+If you execute `ps -aux` you will see a list of all processes. Increase your shell size and look for some program that has a invocation that contains `nani@zookeepers`. This is the Erlang process hosting the bot.
+
+We can connect to this bot as follows:
+
+        erl -remsh nani@zookeepers -sname dev@zookeepers
+
+Once in there, check the processes with `regs()`.
+
+Usually you want to restart the bot application:
+
+        application:stop(nanibot).
+        application:start(nanibot).
+
+Keep in mind that you *will* have to add any handlers that you want to use. Most likely at least the `greeter` and `markov_respond`. The latter is found in the `nanikov` application directory.
